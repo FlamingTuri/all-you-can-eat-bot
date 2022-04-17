@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-order
+      author: gventurini
+      changes:
+        - createTable:
+            tableName: order
+            columns:
+              - column:
+                  name: order_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    nullable: false
