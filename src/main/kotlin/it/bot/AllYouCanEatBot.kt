@@ -5,8 +5,7 @@ import org.telegram.telegrambots.meta.generics.BotOptions
 import org.telegram.telegrambots.meta.generics.LongPollingBot
 
 
-class AllYouCanEatBot(botToken :String) : LongPollingBot {
-
+class AllYouCanEatBot(private val botToken: String) : LongPollingBot {
 
     override fun onUpdateReceived(update: Update) {}
 
