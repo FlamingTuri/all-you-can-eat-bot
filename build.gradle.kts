@@ -19,7 +19,7 @@ val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
 
 dependencies {
-    implementation("org.telegram:telegrambots:5.7.1")
+    implementation("org.telegram:telegrambots:6.0.1")
 
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation("io.quarkus:quarkus-resteasy-reactive")
