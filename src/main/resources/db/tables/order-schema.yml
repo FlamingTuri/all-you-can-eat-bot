@@ -10,6 +10,7 @@ databaseChangeLog:
                   name: order_id
                   type: bigint
                   constraints:
+                    constraintName: order_primary_key
                     primaryKey: true
                     nullable: false
   - changeSet:
@@ -46,3 +47,9 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 3-order
+      author: gventurini
+      changes:
+        - createSequence:
+            sequenceName: order_sequence
