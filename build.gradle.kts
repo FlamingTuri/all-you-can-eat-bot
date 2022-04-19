@@ -32,8 +32,11 @@ dependencies {
     implementation("io.quarkus:quarkus-jdbc-postgresql")
     implementation("io.quarkus:quarkus-reactive-pg-client")
     implementation("io.quarkus:io.quarkus.gradle.plugin:1.0.1.Final")
+    implementation("io.quarkus:quarkus-spring-data-rest")
+    implementation("io.quarkus:quarkus-hibernate-orm-panache")
 
     testImplementation(kotlin("test"))
+    testImplementation("io.rest-assured:rest-assured")
 }
 
 tasks.test {
