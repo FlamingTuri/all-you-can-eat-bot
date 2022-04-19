@@ -1,8 +1,14 @@
 package it.bot.model.entity
 
-import java.util.*
-import javax.persistence.*
+import java.util.Date
+import javax.persistence.Column
+import javax.persistence.MappedSuperclass
+import javax.persistence.PrePersist
+import javax.persistence.PreUpdate
+import javax.persistence.Temporal
+import javax.persistence.TemporalType
 
+@MappedSuperclass
 abstract class AbstractEntity {
 
     @Column(nullable = false)
