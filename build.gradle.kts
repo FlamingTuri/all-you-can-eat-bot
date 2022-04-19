@@ -1,7 +1,9 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.20"
+    val kotlinVersion = "1.6.20"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.allopen") version kotlinVersion
     id("io.quarkus")
 }
 
@@ -41,4 +43,8 @@ tasks.test {
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
     kotlinOptions.javaParameters = true
+}
+
+allOpen {
+    annotation("javax.persistence.Entity")
 }
