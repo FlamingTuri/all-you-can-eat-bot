@@ -14,12 +14,13 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 class BotService(
     @ConfigProperty(name = "bot.token")
     private val botToken: String,
-    @Inject val createOrderService: CreateOrderService
+    @Inject val createOrderService: CreateOrderService,
+    @Inject val joinOrderService: JoinOrderService
 ) {
 
     private val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
 
     init {
-        botsApi.registerBot(AllYouCanEatBot(botToken, createOrderService))
+        botsApi.registerBot(AllYouCanEatBot(botToken, createOrderService, joinOrderService))
     }
 }

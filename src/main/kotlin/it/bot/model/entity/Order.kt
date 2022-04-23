@@ -13,8 +13,8 @@ import javax.persistence.Table
 
 
 private const val TABLE = "order"
-private const val SEQUENCE = TABLE + "_sequence"
-private const val GENERATOR = TABLE + "_generator"
+private const val SEQUENCE = "${TABLE}_sequence"
+private const val GENERATOR = "${TABLE}_generator"
 
 @Entity
 @Table(name = TABLE)
