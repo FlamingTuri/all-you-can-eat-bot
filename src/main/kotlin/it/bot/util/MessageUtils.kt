@@ -19,10 +19,10 @@ object MessageUtils {
     }
 
     fun createMessage(chatId: Long, messageText: String): SendMessage {
-        val message = SendMessage()
-        message.chatId = chatId.toString()
-        message.text = messageText
-        return message
+        return SendMessage().apply {
+            this.chatId = chatId.toString()
+            text = messageText
+        }
     }
 
     fun getUserId(update: Update): Long = update.message.from.id

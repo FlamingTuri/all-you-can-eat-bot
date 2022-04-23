@@ -34,7 +34,7 @@ class JoinOrderService(
     private fun joinOrder(update: Update, matchResult: MatchResult): SendMessage {
         val (_, orderName, _) = matchResult!!.destructured
 
-        val chatId = update.message.chatId
+        val chatId = MessageUtils.getChatId(update)
         val order = orderRepository.findOpenOrderWithNameForChat(chatId, orderName)
 
         if (order == null) {
@@ -45,9 +45,10 @@ class JoinOrderService(
             )
         }
 
-        val userEntity = UserEntity()
-        userEntity.telegramUserId = update.message.from.id
-        userEntity.order = order
+        val userEntity = UserEntity().apply {
+            telegramUserId = MessageUtils.getUserId(update)
+            this.order = order
+        }
 
         userRepository.persist(userEntity)
 

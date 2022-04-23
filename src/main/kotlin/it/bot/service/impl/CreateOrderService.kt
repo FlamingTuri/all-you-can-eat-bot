@@ -43,20 +43,17 @@ class CreateOrderService(@Inject private val orderRepository: OrderRepository) :
     }
 
     private fun checkIfOrderAlreadyExists(update: Update, orderName: String): Boolean {
-        val order = OrderEntity()
-        order.chatId = update.message.chatId
-        order.name = orderName
         return orderRepository.existsOrderWithNameForChat(update.message.chatId, orderName)
     }
 
     private fun createOrder(update: Update, orderName: String) {
-        val chatId = update.message.chatId
-        Log.info("creating order with name $orderName for chat $chatId")
+        Log.info("creating order with name $orderName for chat ${MessageUtils.getChatId(update)}")
 
-        val order = OrderEntity()
-        order.name = orderName
-        order.chatId = chatId
-        order.status = OrderStatus.Open
+        val order = OrderEntity().apply {
+            name = orderName
+            chatId = MessageUtils.getChatId(update)
+            status = OrderStatus.Open
+        }
 
         orderRepository.persist(order)
     }

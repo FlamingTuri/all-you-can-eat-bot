@@ -19,13 +19,13 @@ class AllYouCanEatBot(
         }
 
         if (update.hasMessage() && update.message.hasText()) {
-            val commandParserService = commandParserServices.find {
+            commandParserServices.find {
                 matches(it.getCommand(), MessageUtils.getChatMessage(update))
+            }.let {
+                parseUpdate(it, update)
+            }.also {
+                sendMessage(it)
             }
-
-            val responseMessage = commandParserService?.parseUpdate(update) ?: getCommandNotSupportedMessage(update)
-
-            responseMessage.let { sendMessage(it) }
         }
     }
 
@@ -33,11 +33,23 @@ class AllYouCanEatBot(
         return text.startsWith("$botCommand ") or (text == botCommand)
     }
 
-    private fun sendMessage(message: SendMessage) {
-        try {
-            execute(message)
-        } catch (e: TelegramApiException) {
-            Log.error(e)
+    private fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
+        return if (commandParserService == null) {
+            getCommandNotSupportedMessage(update)
+        } else {
+            commandParserService.parseUpdate(update)
+        }
+    }
+
+    private fun sendMessage(message: SendMessage?) {
+        if (message == null) {
+            Log.info("no message to send")
+        } else {
+            try {
+                execute(message)
+            } catch (e: TelegramApiException) {
+                Log.error(e)
+            }
         }
     }
 
