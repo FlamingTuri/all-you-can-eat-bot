@@ -1,4 +1,4 @@
-package it.bot.service
+package it.bot.service.impl
 
 import io.quarkus.runtime.Startup
 import it.bot.AllYouCanEatBot

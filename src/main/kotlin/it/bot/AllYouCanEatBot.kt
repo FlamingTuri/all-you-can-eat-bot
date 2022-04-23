@@ -1,7 +1,7 @@
 package it.bot
 
 import io.quarkus.logging.Log
-import it.bot.service.CreateOrderService
+import it.bot.service.impl.CreateOrderService
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update

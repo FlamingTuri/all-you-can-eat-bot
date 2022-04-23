@@ -1,21 +1,22 @@
-package it.bot.service
+package it.bot.service.impl
 
 import io.quarkus.logging.Log
 import it.bot.model.entity.Order
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
+import it.bot.service.interfaces.CommandParserService
 import javax.enterprise.context.ApplicationScoped
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @ApplicationScoped
-class CreateOrderService(private val orderRepository: OrderRepository) {
+class CreateOrderService(private val orderRepository: OrderRepository) : CommandParserService {
 
     private val command = "/createOrder"
 
-    fun getCommand(): String = command
+    override fun getCommand(): String = command
 
-    fun parseUpdate(update: Update): SendMessage {
+    override fun parseUpdate(update: Update): SendMessage {
         val regex = "$command (\\s*)(\\w+)(\\s*)".toRegex()
         return when (val matchResult = regex.matchEntire(update.message.text)) {
             null -> getInvalidOperationMessage(update)
@@ -46,6 +47,7 @@ class CreateOrderService(private val orderRepository: OrderRepository) {
         order.name = orderName
         order.chatId = update.message.chatId
         order.status = OrderStatus.Open
+
         orderRepository.save(order)
     }
 

@@ -1,6 +1,6 @@
 package it.bot.controller
 
-import it.bot.service.BotService
+import it.bot.service.impl.BotService
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.Path
