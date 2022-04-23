@@ -2,12 +2,11 @@ package it.bot.service
 
 import io.quarkus.runtime.Startup
 import it.bot.AllYouCanEatBot
-import it.bot.repository.OrderRepository
+import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 
 @Startup
@@ -15,12 +14,12 @@ import javax.inject.Inject
 class BotService(
     @ConfigProperty(name = "bot.token")
     private val botToken: String,
-    @Inject val orderRepository: OrderRepository
+    @Inject val createOrderService: CreateOrderService
 ) {
 
     private val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
 
     init {
-        botsApi.registerBot(AllYouCanEatBot(botToken, orderRepository))
+        botsApi.registerBot(AllYouCanEatBot(botToken, createOrderService))
     }
 }
