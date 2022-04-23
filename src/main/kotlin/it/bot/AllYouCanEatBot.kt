@@ -1,8 +1,8 @@
 package it.bot
 
 import io.quarkus.logging.Log
-import it.bot.service.impl.CreateOrderService
-import it.bot.service.impl.JoinOrderService
+import it.bot.service.interfaces.CommandParserService
+import it.bot.util.MessageUtils
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -10,21 +10,22 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class AllYouCanEatBot(
     private val botToken: String,
-    private val createOrderService: CreateOrderService,
-    private val joinOrderService: JoinOrderService
+    private val commandParserServices: List<CommandParserService>,
 ) : TelegramLongPollingBot() {
 
     override fun onUpdateReceived(update: Update) {
-        Log.debug("update received $update")
-        Log.info(update.message.from.id)
+        if (Log.isDebugEnabled()) {
+            Log.debug("update received $update")
+        }
 
         if (update.hasMessage() && update.message.hasText()) {
-            val responseMessage = when {
-                matches(createOrderService.getCommand(), update.message.text) -> createOrderService.parseUpdate(update)
-                matches(joinOrderService.getCommand(), update.message.text) -> joinOrderService.parseUpdate(update)
-                else -> getCommandNotSupportedMessage(update)
+            val commandParserService = commandParserServices.find {
+                matches(it.getCommand(), MessageUtils.getChatMessage(update))
             }
-            responseMessage?.let { sendMessage(it) }
+
+            val responseMessage = commandParserService?.parseUpdate(update) ?: getCommandNotSupportedMessage(update)
+
+            responseMessage.let { sendMessage(it) }
         }
     }
 
@@ -41,14 +42,9 @@ class AllYouCanEatBot(
     }
 
     private fun getCommandNotSupportedMessage(update: Update): SendMessage {
-        val errorMessage = "no command support for '${update.message.text}'"
+        val errorMessage = "no command support for '${MessageUtils.getChatMessage(update)}'"
         Log.error(errorMessage)
-
-        val message = SendMessage()
-        message.chatId = update.message.chatId.toString()
-        message.text = errorMessage
-
-        return message
+        return MessageUtils.createMessage(update, errorMessage)
     }
 
     override fun getBotUsername(): String {

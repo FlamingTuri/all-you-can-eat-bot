@@ -2,6 +2,7 @@ package it.bot.service.impl
 
 import io.quarkus.runtime.Startup
 import it.bot.AllYouCanEatBot
+import it.bot.service.interfaces.CommandParserService
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import org.eclipse.microprofile.config.inject.ConfigProperty
@@ -19,8 +20,9 @@ class BotService(
 ) {
 
     private val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
+    private val commandParserServices: List<CommandParserService> = listOf(createOrderService, joinOrderService)
 
     init {
-        botsApi.registerBot(AllYouCanEatBot(botToken, createOrderService, joinOrderService))
+        botsApi.registerBot(AllYouCanEatBot(botToken, commandParserServices))
     }
 }
