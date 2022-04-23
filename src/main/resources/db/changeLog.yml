@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: db/tables/order-schema.yml
+  - include:
+      file: db/tables/user-schema.yml
