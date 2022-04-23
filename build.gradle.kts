@@ -25,16 +25,11 @@ dependencies {
     implementation("org.telegram:telegrambots:6.0.1")
 
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
-    implementation("io.quarkus:quarkus-resteasy-reactive")
-    implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
     implementation("io.quarkus:quarkus-arc")
-    implementation("io.quarkus:quarkus-hibernate-orm")
+    implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-liquibase")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
-    implementation("io.quarkus:quarkus-reactive-pg-client")
-    implementation("io.quarkus:io.quarkus.gradle.plugin:1.0.1.Final")
-    implementation("io.quarkus:quarkus-spring-data-rest")
-    implementation("io.quarkus:quarkus-hibernate-orm-panache")
+    implementation("io.quarkus:quarkus-hibernate-orm-panache-kotlin")
 
     testImplementation(kotlin("test"))
     testImplementation("io.rest-assured:rest-assured")
