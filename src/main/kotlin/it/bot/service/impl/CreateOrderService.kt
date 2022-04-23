@@ -5,6 +5,7 @@ import it.bot.model.entity.Order
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
+import it.bot.util.MessageUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -22,28 +23,23 @@ class CreateOrderService(@Inject private val orderRepository: OrderRepository) :
     override fun parseUpdate(update: Update): SendMessage {
         val regex = "$command (\\s*)(\\w+)(\\s*)".toRegex()
         return when (val matchResult = regex.matchEntire(update.message.text)) {
-            null -> getInvalidOperationMessage(update)
+            null -> MessageUtils.getInvalidCommandMessage(update, command)
             else -> createOrderIfNotExists(update, matchResult)
         }
-    }
-
-    private fun getInvalidOperationMessage(update: Update): SendMessage {
-        Log.error("invalid format for operation $command: ${update.message.text}")
-        return createMessage(
-            update.message.chatId,
-            "invalid format for operation $command, accepted format: $command {orderName}"
-        )
     }
 
     private fun createOrderIfNotExists(update: Update, matchResult: MatchResult?): SendMessage {
         val (_, orderName, _) = matchResult!!.destructured
 
         if (checkIfOrderAlreadyExists(update, orderName)) {
-            return createMessage(update, "Error: an order with the same name already exists for current chat")
+            return MessageUtils.createMessage(
+                update,
+                "Error: an order with the same name already exists for current chat"
+            )
         }
 
         createOrder(update, orderName)
-        return createMessage(update, "Successfully created order '$orderName'")
+        return MessageUtils.createMessage(update, "Successfully created order '$orderName'")
     }
 
     private fun checkIfOrderAlreadyExists(update: Update, orderName: String): Boolean {
@@ -63,16 +59,5 @@ class CreateOrderService(@Inject private val orderRepository: OrderRepository) :
         order.status = OrderStatus.Open
 
         orderRepository.persist(order)
-    }
-
-    private fun createMessage(update: Update, messageText: String): SendMessage {
-        return createMessage(update.message.chatId, messageText)
-    }
-
-    private fun createMessage(chatId: Long, messageText: String): SendMessage {
-        val message = SendMessage()
-        message.chatId = chatId.toString()
-        message.text = messageText
-        return message
     }
 }
