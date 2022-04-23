@@ -13,19 +13,19 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @ApplicationScoped
-class CreateOrderService(@Inject private val orderRepository: OrderRepository) : CommandParserService {
+class CreateOrderService(@Inject private val orderRepository: OrderRepository) : CommandParserService() {
 
-    private val command = "/createOrder"
+    override val command: String = "/createOrder"
 
-    override fun getCommand(): String = command
+    override val commandPattern: String = "(\\s*)(\\w+)(\\s*)"
 
     @Transactional
-    override fun parseUpdate(update: Update): SendMessage {
-        val regex = "$command (\\s*)(\\w+)(\\s*)".toRegex()
-        return when (val matchResult = regex.matchEntire(update.message.text)) {
-            null -> MessageUtils.getInvalidCommandMessage(update, command)
-            else -> createOrderIfNotExists(update, matchResult)
-        }
+    override fun parseUpdate(update: Update): SendMessage? {
+        return super.parseUpdate(update)
+    }
+
+    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
+        return createOrderIfNotExists(update, matchResult)
     }
 
     private fun createOrderIfNotExists(update: Update, matchResult: MatchResult?): SendMessage {

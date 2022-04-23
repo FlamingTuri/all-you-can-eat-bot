@@ -20,7 +20,7 @@ class AllYouCanEatBot(
 
         if (update.hasMessage() && update.message.hasText()) {
             commandParserServices.find {
-                matches(it.getCommand(), MessageUtils.getChatMessage(update))
+                matches(it.command, MessageUtils.getChatMessage(update))
             }.let {
                 parseUpdate(it, update)
             }.also {
