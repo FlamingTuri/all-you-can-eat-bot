@@ -33,5 +33,5 @@ class UserEntity : AbstractEntity() {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", /*referencedColumnName = "order_id",*/ nullable = false)
-    var order: Order? = null
+    var order: OrderEntity? = null
 }

@@ -1,7 +1,7 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
-import it.bot.model.entity.Order
+import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
@@ -43,7 +43,7 @@ class CreateOrderService(@Inject private val orderRepository: OrderRepository) :
     }
 
     private fun checkIfOrderAlreadyExists(update: Update, orderName: String): Boolean {
-        val order = Order()
+        val order = OrderEntity()
         order.chatId = update.message.chatId
         order.name = orderName
         return orderRepository.existsOrderWithNameForChat(update.message.chatId, orderName)
@@ -53,7 +53,7 @@ class CreateOrderService(@Inject private val orderRepository: OrderRepository) :
         val chatId = update.message.chatId
         Log.info("creating order with name $orderName for chat $chatId")
 
-        val order = Order()
+        val order = OrderEntity()
         order.name = orderName
         order.chatId = chatId
         order.status = OrderStatus.Open

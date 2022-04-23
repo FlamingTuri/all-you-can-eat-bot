@@ -19,7 +19,7 @@ private const val GENERATOR = "${TABLE}_generator"
 @Entity
 @Table(name = TABLE)
 @SequenceGenerator(name = GENERATOR, sequenceName = SEQUENCE, allocationSize = 1)
-class Order : AbstractEntity() {
+class OrderEntity : AbstractEntity() {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = GENERATOR)
