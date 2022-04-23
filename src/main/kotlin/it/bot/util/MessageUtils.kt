@@ -15,7 +15,7 @@ object MessageUtils {
     }
 
     fun createMessage(update: Update, messageText: String): SendMessage {
-        return createMessage(update.message.chatId, messageText)
+        return createMessage(getChatId(update), messageText)
     }
 
     fun createMessage(chatId: Long, messageText: String): SendMessage {
@@ -24,5 +24,11 @@ object MessageUtils {
         message.text = messageText
         return message
     }
+
+    fun getUserId(update: Update): Long = update.message.from.id
+
+    fun getChatId(update: Update): Long = update.message.chatId
+
+    fun getChatMessage(update: Update): String = update.message.text
 
 }
