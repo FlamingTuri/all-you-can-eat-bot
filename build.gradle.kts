@@ -5,6 +5,7 @@ plugins {
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.allopen") version kotlinVersion
     id("io.quarkus")
+    id("idea")
 }
 
 group = "me.turi"
