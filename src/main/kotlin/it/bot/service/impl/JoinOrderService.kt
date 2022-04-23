@@ -18,7 +18,7 @@ class JoinOrderService(
     @Inject private val userRepository: UserRepository
 ) : CommandParserService {
 
-    private val command = "/join"
+    private val command = "/joinOrder"
 
     override fun getCommand(): String = command
 
