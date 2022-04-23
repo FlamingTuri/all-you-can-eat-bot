@@ -6,21 +6,24 @@ import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
 import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
+import javax.transaction.Transactional
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @ApplicationScoped
-class CreateOrderService(private val orderRepository: OrderRepository) : CommandParserService {
+class CreateOrderService(@Inject private val orderRepository: OrderRepository) : CommandParserService {
 
     private val command = "/createOrder"
 
     override fun getCommand(): String = command
 
+    @Transactional
     override fun parseUpdate(update: Update): SendMessage {
         val regex = "$command (\\s*)(\\w+)(\\s*)".toRegex()
         return when (val matchResult = regex.matchEntire(update.message.text)) {
             null -> getInvalidOperationMessage(update)
-            else -> createOrder(update, matchResult)
+            else -> createOrderIfNotExists(update, matchResult)
         }
     }
 
@@ -32,23 +35,38 @@ class CreateOrderService(private val orderRepository: OrderRepository) : Command
         )
     }
 
-    private fun createOrder(update: Update, matchResult: MatchResult?): SendMessage {
+    private fun createOrderIfNotExists(update: Update, matchResult: MatchResult?): SendMessage {
         val (_, orderName, _) = matchResult!!.destructured
-        Log.info("success $orderName")
+
+        if (checkIfOrderAlreadyExists(update, orderName)) {
+            return createMessage(update, "Error: an order with the same name already exists for current chat")
+        }
+
         createOrder(update, orderName)
-        return createMessage(update.message.chatId, "Successfully created order '$orderName'")
+        return createMessage(update, "Successfully created order '$orderName'")
+    }
+
+    private fun checkIfOrderAlreadyExists(update: Update, orderName: String): Boolean {
+        val order = Order()
+        order.chatId = update.message.chatId
+        order.name = orderName
+        return orderRepository.existsOrderWithNameForChat(update.message.chatId, orderName)
     }
 
     private fun createOrder(update: Update, orderName: String) {
-        Log.info(update.message.chat.userName)
-        Log.info(update.message.chat.id)
+        val chatId = update.message.chatId
+        Log.info("creating order with name $orderName for chat $chatId")
 
         val order = Order()
         order.name = orderName
-        order.chatId = update.message.chatId
+        order.chatId = chatId
         order.status = OrderStatus.Open
 
-        orderRepository.save(order)
+        orderRepository.persist(order)
+    }
+
+    private fun createMessage(update: Update, messageText: String): SendMessage {
+        return createMessage(update.message.chatId, messageText)
     }
 
     private fun createMessage(chatId: Long, messageText: String): SendMessage {

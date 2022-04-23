@@ -1,7 +1,13 @@
 package it.bot.repository
 
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepository
 import it.bot.model.entity.Order
-import org.springframework.data.jpa.repository.JpaRepository
+import javax.enterprise.context.ApplicationScoped
 
-interface OrderRepository : JpaRepository<Order, Long>{
+@ApplicationScoped
+class OrderRepository : PanacheRepository<Order> {
+
+    fun existsOrderWithNameForChat(chatId: Long, orderName: String): Boolean {
+        return find("chatId = ?1 and name = ?2", chatId, orderName).firstResult() != null
+    }
 }
