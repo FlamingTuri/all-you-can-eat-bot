@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-user-dish
+      author: gventurini
+      changes:
+        - createTable:
+            tableName: user_dish
+            columns:
+              - column:
+                  name: user_dish_id
+                  type: bigint
+                  constraints:
+                    constraintName: user_dish_primary_key
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creation_date
+                  type: timestamp(6) without timezone
+              - column:
+                  name: last_update_date
+                  type: timestamp(6) without timezone
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: "fk_user_id"
+                    references: "user(user_id)"
+              - column:
+                  name: dish_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: "fk_dish_id"
+                    references: "dish(dish_id)"
+        - createSequence:
+            sequenceName: user_dish_sequence
