@@ -6,11 +6,11 @@ import org.telegram.telegrambots.meta.api.objects.Update
 
 object MessageUtils {
 
-    fun getInvalidCommandMessage(update: Update, command: String): SendMessage {
+    fun getInvalidCommandMessage(update: Update, command: String, commandFormat: String): SendMessage {
         Log.error("invalid format for operation $command: ${update.message.text}")
         return createMessage(
             update,
-            "invalid format for operation $command, accepted format: $command {orderName}"
+            "Error: invalid format for operation $command, accepted format: $command $commandFormat"
         )
     }
 

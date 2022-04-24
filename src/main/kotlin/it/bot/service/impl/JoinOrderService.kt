@@ -22,6 +22,8 @@ class JoinOrderService(
 
     override val commandPattern = "(\\s*)(\\w+)(\\s*)"
 
+    override val commandFormat: String = "{orderName}"
+
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {
         return super.parseUpdate(update)
@@ -41,7 +43,7 @@ class JoinOrderService(
             Log.error("order $orderName does not exists in chat $chatId")
             return MessageUtils.createMessage(
                 update,
-                "You can not join $orderName order, since it does not exists in the current chat"
+                "Error: you can not join $orderName order, since it does not exists in the current chat"
             )
         }
 

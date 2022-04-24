@@ -26,6 +26,8 @@ class AddDishService(
 
     override val commandPattern: String = "(\\s*)(\\d+)((\\s+)(\\d+))?((\\s+)(\\w+))?"
 
+    override val commandFormat: String = "{menuNumber} {quantity:1} {dishName:}"
+
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {
         return super.parseUpdate(update)
@@ -40,7 +42,7 @@ class AddDishService(
                         "telegramUserId: ${MessageUtils.getTelegramUserId(update)}, " +
                         "telegramChatId: ${MessageUtils.getChatId(update)}"
             )
-            return MessageUtils.createMessage(update, "Error quantity must be greater than 0")
+            return MessageUtils.createMessage(update, "Error: quantity must be greater than 0")
         }
 
         val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))

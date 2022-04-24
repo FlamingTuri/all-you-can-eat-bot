@@ -19,6 +19,8 @@ class CreateOrderService(@Inject private val orderRepository: OrderRepository) :
 
     override val commandPattern: String = "(\\s*)(\\w+)(\\s*)"
 
+    override val commandFormat: String = "{orderName}"
+
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {
         return super.parseUpdate(update)

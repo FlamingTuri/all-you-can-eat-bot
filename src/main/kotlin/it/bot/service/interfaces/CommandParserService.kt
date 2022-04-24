@@ -4,16 +4,18 @@ import it.bot.util.MessageUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 
-abstract class CommandParserService() {
+abstract class CommandParserService {
 
     abstract val command: String
 
     protected abstract val commandPattern: String
 
+    protected abstract val commandFormat: String
+
     open fun parseUpdate(update: Update): SendMessage? {
         val regex = "$command $commandPattern".toRegex()
         return when (val matchResult = regex.matchEntire(update.message.text)) {
-            null -> MessageUtils.getInvalidCommandMessage(update, command)
+            null -> MessageUtils.getInvalidCommandMessage(update, command, commandFormat)
             else -> executeOperation(update, matchResult)
         }
     }
