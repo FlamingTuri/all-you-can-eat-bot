@@ -5,7 +5,6 @@ import it.bot.model.dto.DishDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.DishJpaRepository
-import it.bot.repository.DishRepository
 import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.FormatUtils
@@ -21,10 +20,8 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class CloseOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
     @Inject private val orderRepository: OrderRepository,
-    @Inject private val dishRepository: DishRepository,
-    @Inject private val dishJpaRepository: DishJpaRepository,
-
-    ) : CommandParserService() {
+    @Inject private val dishJpaRepository: DishJpaRepository
+) : CommandParserService() {
 
     override val command: String = "/closeOrder"
 

@@ -10,11 +10,12 @@ interface DishJpaRepository : JpaRepository<DishEntity, Long> {
 
     @Query(
         """
-            select new List(d.menuNumber , sum(uds.quantity) , d.name )
+            select new List(d.menuNumber, sum(uds.quantity), d.name)
             from DishEntity d
             join fetch UserDishEntity uds on d.dishId = uds.dishId
             where d.orderId = ?1
             group by d.menuNumber, d.name
+            order by d.menuNumber
         """
     )
     fun groupOrderDishesByMenuNumber(orderId: Long): List<List<Any>>
