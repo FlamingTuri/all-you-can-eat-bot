@@ -34,18 +34,33 @@ class AddDishService(
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
         val (dishMenuNumber, dishQuantity, dishName) = destructure(matchResult)
 
+        if (dishQuantity <= 0) {
+            Log.error(
+                "inserted a wrong quantity value: $dishQuantity, " +
+                        "telegramUserId: ${MessageUtils.getTelegramUserId(update)}, " +
+                        "telegramChatId: ${MessageUtils.getChatId(update)}"
+            )
+            return MessageUtils.createMessage(update, "Error quantity must be greater than 0")
+        }
+
         val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))
         if (user == null) {
-            // TODO
-            Log.error("")
-            return MessageUtils.createMessage(update, "")
+            Log.error("user ${MessageUtils.getTelegramUserId(update)} not found")
+            return MessageUtils.createMessage(
+                update,
+                "Error: you are not part of an order. Use /joinOrder command before adding a dish"
+            )
         }
 
         val dish = createOrUpdateDish(user, dishMenuNumber, dishName)
 
-        addToUserDishes(user, dish, dishQuantity)
+        val userDish = addToUserDishes(user, dish, dishQuantity)
 
-        return null // TODO
+        return MessageUtils.createMessage(
+            update,
+            "Successfully add number ${formatDishInfo(dish)} to order '${user.order!!.name}' " +
+                    "(your quantity: ${userDish.quantity})"
+        )
     }
 
     private fun destructure(matchResult: MatchResult): Triple<Int, Int, String?> {
@@ -82,13 +97,14 @@ class AddDishService(
         }
     }
 
-    private fun addToUserDishes(user: UserEntity, dish: DishEntity, dishQuantity: Int) {
+    private fun addToUserDishes(user: UserEntity, dish: DishEntity, dishQuantity: Int): UserDishEntity {
         val existingUserDish = userDishRepository.findUserDish(user, dish)
         if (existingUserDish == null) {
-            createUserDish(user, dish, dishQuantity)
+            return createUserDish(user, dish, dishQuantity)
         } else {
             existingUserDish.quantity = existingUserDish.quantity?.plus(dishQuantity)
             userDishRepository.persist(existingUserDish)
+            return existingUserDish
         }
     }
 
@@ -100,5 +116,9 @@ class AddDishService(
         }.also {
             userDishRepository.persist(it)
         }
+    }
+
+    private fun formatDishInfo(dish: DishEntity): String {
+        return dish.name?.let { "${dish.menuNumber} ($it)" } ?: "$dish.menuNumber"
     }
 }
