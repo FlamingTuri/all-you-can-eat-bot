@@ -2,8 +2,10 @@ package it.bot.service.impl
 
 import io.quarkus.logging.Log
 import it.bot.model.entity.DishEntity
+import it.bot.model.entity.UserDishEntity
 import it.bot.model.entity.UserEntity
 import it.bot.repository.DishRepository
+import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
@@ -16,7 +18,8 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @ApplicationScoped
 class AddDishService(
     @Inject private val userRepository: UserRepository,
-    @Inject private val dishRepository: DishRepository
+    @Inject private val dishRepository: DishRepository,
+    @Inject private val userDishRepository: UserDishRepository
 ) : CommandParserService() {
 
     override val command: String = "/addDish"
@@ -29,7 +32,7 @@ class AddDishService(
     }
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
-        val (_, dishMenuNumber, _, _, dishQuantity, _, _, dishName) = matchResult.destructured
+        val (dishMenuNumber, dishQuantity, dishName) = destructure(matchResult)
 
         val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))
         if (user == null) {
@@ -40,14 +43,25 @@ class AddDishService(
 
         val dish = createOrUpdateDish(user, dishMenuNumber, dishName)
 
-        return null
+        addToUserDishes(user, dish, dishQuantity)
+
+        return null // TODO
     }
 
-    private fun createOrUpdateDish(user: UserEntity, dishMenuNumber: String, dishName: String): DishEntity {
-        val existingDish = dishRepository.findDish(dishMenuNumber.toInt(), user.orderId!!)
+    private fun destructure(matchResult: MatchResult): Triple<Int, Int, String?> {
+        val (_, dishMenuNumber, _, _, dishQuantity, _, _, dishName) = matchResult.destructured
+        return Triple(
+            dishMenuNumber.toInt(),
+            if (dishQuantity == "") 1 else dishQuantity.toInt(),
+            if (dishName == "") null else dishName
+        )
+    }
+
+    private fun createOrUpdateDish(user: UserEntity, dishMenuNumber: Int, dishName: String?): DishEntity {
+        val existingDish = dishRepository.findDish(dishMenuNumber, user.orderId!!)
 
         val dish = existingDish?.apply {
-            getDishNameOrNullIfEmpty(dishName)?.let {
+            dishName?.let {
                 Log.info("order ${user.orderId}: updating dish $menuNumber - $it")
                 name = it
                 dishRepository.persist(existingDish)
@@ -59,16 +73,32 @@ class AddDishService(
         return dish
     }
 
-    private fun getDishNameOrNullIfEmpty(dishName: String): String? {
-        return if (dishName == "") null else dishName
-    }
-
-    private fun createDish(user: UserEntity, dishMenuNumber: String, dishName: String): DishEntity {
+    private fun createDish(user: UserEntity, dishMenuNumber: Int, dishName: String?): DishEntity {
         Log.info("order ${user.orderId}: adding dish $dishMenuNumber - $dishName")
         return DishEntity().apply {
             menuNumber = dishMenuNumber.toInt()
-            name = getDishNameOrNullIfEmpty(dishName)
+            name = dishName
             order = user.order
+        }
+    }
+
+    private fun addToUserDishes(user: UserEntity, dish: DishEntity, dishQuantity: Int) {
+        val existingUserDish = userDishRepository.findUserDish(user, dish)
+        if (existingUserDish == null) {
+            createUserDish(user, dish, dishQuantity)
+        } else {
+            existingUserDish.quantity = existingUserDish.quantity?.plus(dishQuantity)
+            userDishRepository.persist(existingUserDish)
+        }
+    }
+
+    private fun createUserDish(user: UserEntity, dish: DishEntity, dishQuantity: Int): UserDishEntity {
+        return UserDishEntity().apply {
+            quantity = dishQuantity
+            this.user = user
+            this.dish = dish
+        }.also {
+            userDishRepository.persist(it)
         }
     }
 }
