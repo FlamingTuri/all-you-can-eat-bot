@@ -19,14 +19,36 @@ class AllYouCanEatBot(
         }
 
         if (update.hasMessage() && update.message.hasText()) {
-            commandParserServices.find {
-                matches(it.command, MessageUtils.getChatMessage(update))
-            }.let {
-                parseUpdate(it, update)
-            }.also {
-                sendMessage(it)
+            try {
+                handleCommand(update)
+            } catch (exception: Exception) {
+                handleUnexpectedError(update, exception)
             }
         }
+    }
+
+    private fun handleCommand(update: Update) {
+        commandParserServices.find {
+            matches(it.command, MessageUtils.getChatMessage(update))
+        }.let {
+            parseUpdate(it, update)
+        }.also {
+            sendMessage(it)
+        }
+    }
+
+    private fun handleUnexpectedError(update: Update, exception: Exception) {
+        Log.error(
+            "unexpected error occurred: " +
+                    "chatId ${MessageUtils.getChatId(update)}, " +
+                    "userId ${MessageUtils.getTelegramUserId(update)}, " +
+                    "message '${MessageUtils.getChatMessage(update)}' ",
+            exception
+        )
+        val message = MessageUtils.createMessage(
+            update, "Error: something unexpected happened. Reason: ${exception.message}"
+        )
+        sendMessage(message)
     }
 
     private fun matches(botCommand: String, text: String): Boolean {
