@@ -26,6 +26,14 @@ databaseChangeLog:
                   name: last_update_date
                   type: timestamp(6) without timezone
               - column:
+                  name: menu_number
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: text
+              - column:
                   name: order_id
                   type: bigint
                   constraints:
