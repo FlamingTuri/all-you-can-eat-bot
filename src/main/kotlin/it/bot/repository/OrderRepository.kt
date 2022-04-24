@@ -12,6 +12,10 @@ class OrderRepository : PanacheRepository<OrderEntity> {
         return find("chatId = ?1 and name = ?2", chatId, orderName).firstResult() != null
     }
 
+    fun findOrderWithNameForChat(chatId: Long, orderName: String): OrderEntity? {
+        return find("chatId = ?1 and name = ?2", chatId, orderName).firstResult()
+    }
+
     fun findOpenOrderWithNameForChat(chatId: Long, orderName: String): OrderEntity? {
         return find("chatId = ?1 and name = ?2 and status = ?3", chatId, orderName, OrderStatus.Open).firstResult()
     }
