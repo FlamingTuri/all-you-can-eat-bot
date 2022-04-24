@@ -31,7 +31,7 @@ class AddDishService(
         return super.parseUpdate(update)
     }
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
+    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val (dishMenuNumber, dishQuantity, dishName) = destructure(matchResult)
 
         if (dishQuantity <= 0) {
@@ -91,7 +91,7 @@ class AddDishService(
     private fun createDish(user: UserEntity, dishMenuNumber: Int, dishName: String?): DishEntity {
         Log.info("order ${user.orderId}: adding dish $dishMenuNumber - $dishName")
         return DishEntity().apply {
-            menuNumber = dishMenuNumber.toInt()
+            menuNumber = dishMenuNumber
             name = dishName
             order = user.order
         }
@@ -99,12 +99,12 @@ class AddDishService(
 
     private fun addToUserDishes(user: UserEntity, dish: DishEntity, dishQuantity: Int): UserDishEntity {
         val existingUserDish = userDishRepository.findUserDish(user, dish)
-        if (existingUserDish == null) {
-            return createUserDish(user, dish, dishQuantity)
+        return if (existingUserDish == null) {
+            createUserDish(user, dish, dishQuantity)
         } else {
             existingUserDish.quantity = existingUserDish.quantity?.plus(dishQuantity)
             userDishRepository.persist(existingUserDish)
-            return existingUserDish
+            existingUserDish
         }
     }
 
