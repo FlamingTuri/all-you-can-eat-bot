@@ -24,7 +24,7 @@ class OrderEntity : AbstractEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = GENERATOR)
     @Column(name = "order_id", nullable = false)
-    var id: Long? = null
+    var orderId: Long? = null
 
     @Column(nullable = false)
     var name: String? = null
