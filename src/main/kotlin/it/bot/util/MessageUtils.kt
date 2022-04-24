@@ -25,7 +25,7 @@ object MessageUtils {
         }
     }
 
-    fun getUserId(update: Update): Long = update.message.from.id
+    fun getTelegramUserId(update: Update): Long = update.message.from.id
 
     fun getChatId(update: Update): Long = update.message.chatId
 

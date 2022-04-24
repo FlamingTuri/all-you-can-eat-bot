@@ -32,7 +32,7 @@ class JoinOrderService(
     }
 
     private fun joinOrder(update: Update, matchResult: MatchResult): SendMessage {
-        val (_, orderName, _) = matchResult!!.destructured
+        val (_, orderName, _) = matchResult.destructured
 
         val chatId = MessageUtils.getChatId(update)
         val order = orderRepository.findOpenOrderWithNameForChat(chatId, orderName)
@@ -46,7 +46,7 @@ class JoinOrderService(
         }
 
         val userEntity = UserEntity().apply {
-            telegramUserId = MessageUtils.getUserId(update)
+            telegramUserId = MessageUtils.getTelegramUserId(update)
             this.order = order
         }
 
