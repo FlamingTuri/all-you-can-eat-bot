@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
 class AllYouCanEatBot(
+    private val botUsername: String,
     private val botToken: String,
     private val commandParserServices: List<CommandParserService>,
 ) : TelegramLongPollingBot() {
@@ -82,7 +83,7 @@ class AllYouCanEatBot(
     }
 
     override fun getBotUsername(): String {
-        return "AllYouCanEatBot"
+        return botUsername
     }
 
     override fun getBotToken(): String {

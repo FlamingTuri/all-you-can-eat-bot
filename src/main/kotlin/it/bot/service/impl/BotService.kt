@@ -13,8 +13,8 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 @Startup
 @ApplicationScoped
 class BotService(
-    @ConfigProperty(name = "bot.token")
-    private val botToken: String,
+    @ConfigProperty(name = "bot.username") private val botUsername: String,
+    @ConfigProperty(name = "bot.token") private val botToken: String,
     @Inject val createOrderService: CreateOrderService,
     @Inject val joinOrderService: JoinOrderService,
     @Inject val leaveOrderService: LeaveOrderService,
@@ -28,6 +28,6 @@ class BotService(
     )
 
     init {
-        botsApi.registerBot(AllYouCanEatBot(botToken, commandParserServices))
+        botsApi.registerBot(AllYouCanEatBot(botUsername, botToken, commandParserServices))
     }
 }
