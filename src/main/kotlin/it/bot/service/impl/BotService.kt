@@ -17,12 +17,13 @@ class BotService(
     private val botToken: String,
     @Inject val createOrderService: CreateOrderService,
     @Inject val joinOrderService: JoinOrderService,
-    @Inject val leaveOrderService: LeaveOrderService
+    @Inject val leaveOrderService: LeaveOrderService,
+    @Inject val addDishService: AddDishService
 ) {
 
     private val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
     private val commandParserServices: List<CommandParserService> = listOf(
-        createOrderService, joinOrderService, leaveOrderService
+        createOrderService, joinOrderService, leaveOrderService, addDishService
     )
 
     init {
