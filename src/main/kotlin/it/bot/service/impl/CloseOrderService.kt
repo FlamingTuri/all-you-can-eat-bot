@@ -1,12 +1,14 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
+import it.bot.model.dto.DishDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.DishJpaRepository
 import it.bot.repository.DishRepository
 import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
+import it.bot.util.FormatUtils
 import it.bot.util.MessageUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -63,17 +65,23 @@ class CloseOrderService(
     }
 
     private fun closeOrder(update: Update, order: OrderEntity): SendMessage {
-        //order.status = OrderStatus.Close
-        //orderRepository.persist(order)
+        order.status = OrderStatus.Close
+        orderRepository.persist(order)
 
-        val orderRecap = dishJpaRepository.groupOrderDishesByMenuNumber(order.orderId!!).joinToString("\n") {
-            val menuNumber = it[0]
-            val quantity = it[1]
-            val name = it[2]
-            "- number $menuNumber    x $quantity ($name)"
+        val orderDishes = dishJpaRepository.groupOrderDishesByMenuNumber(order.orderId!!).map {
+            val menuNumber = it[0] as Int
+            val quantity = it[1] as Long
+            val name = it[2] as String
+            DishDto(menuNumber, quantity, name)
         }
 
-        Log.info(orderRecap)
+        val maxMenuNumber = orderDishes.maxOf { it.menuNumber }
+        val padding = "$maxMenuNumber".length
+
+        val orderRecap = orderDishes.joinToString("\n") {
+            val paddedMenuNumber = "${it.menuNumber}".padEnd(padding)
+            "- number $paddedMenuNumber    x ${it.quantity}  ${FormatUtils.wrapIfNotNull(it.name)}"
+        }
 
         return MessageUtils.createMessage(
             update,
