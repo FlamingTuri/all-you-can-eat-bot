@@ -3,3 +3,5 @@ databaseChangeLog:
       file: db/tables/order-schema.yml
   - include:
       file: db/tables/user-schema.yml
+  - include:
+      file: db/tables/dish-schema.yml
