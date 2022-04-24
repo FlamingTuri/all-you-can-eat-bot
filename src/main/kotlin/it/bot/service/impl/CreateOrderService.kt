@@ -28,8 +28,8 @@ class CreateOrderService(@Inject private val orderRepository: OrderRepository) :
         return createOrderIfNotExists(update, matchResult)
     }
 
-    private fun createOrderIfNotExists(update: Update, matchResult: MatchResult?): SendMessage {
-        val (_, orderName, _) = matchResult!!.destructured
+    private fun createOrderIfNotExists(update: Update, matchResult: MatchResult): SendMessage {
+        val (_, orderName, _) = matchResult.destructured
 
         if (checkIfOrderAlreadyExists(update, orderName)) {
             return MessageUtils.createMessage(
