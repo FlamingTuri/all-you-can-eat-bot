@@ -50,10 +50,11 @@ class AddDishService(
             getDishNameOrNullIfEmpty(dishName)?.let {
                 Log.info("order ${user.orderId}: updating dish $menuNumber - $it")
                 name = it
+                dishRepository.persist(existingDish)
             }
-        } ?: createDish(user, dishMenuNumber, dishName)
-
-        dishRepository.persist(dish)
+        } ?: createDish(user, dishMenuNumber, dishName).also {
+            dishRepository.persist(it)
+        }
 
         return dish
     }
