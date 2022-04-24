@@ -30,6 +30,7 @@ dependencies {
     implementation("io.quarkus:quarkus-liquibase")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
     implementation("io.quarkus:quarkus-hibernate-orm-panache-kotlin")
+    implementation("io.quarkus:quarkus-spring-data-jpa")
 
     testImplementation(kotlin("test"))
     testImplementation("io.rest-assured:rest-assured")

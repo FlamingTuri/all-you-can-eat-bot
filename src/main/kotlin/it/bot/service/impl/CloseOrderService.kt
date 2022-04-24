@@ -3,6 +3,8 @@ package it.bot.service.impl
 import io.quarkus.logging.Log
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
+import it.bot.repository.DishJpaRepository
+import it.bot.repository.DishRepository
 import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
@@ -16,8 +18,11 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @ApplicationScoped
 class CloseOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
-    @Inject private val orderRepository: OrderRepository
-) : CommandParserService() {
+    @Inject private val orderRepository: OrderRepository,
+    @Inject private val dishRepository: DishRepository,
+    @Inject private val dishJpaRepository: DishJpaRepository,
+
+    ) : CommandParserService() {
 
     override val command: String = "/closeOrder"
 
@@ -58,12 +63,24 @@ class CloseOrderService(
     }
 
     private fun closeOrder(update: Update, order: OrderEntity): SendMessage {
-        order.status = OrderStatus.Close
-        orderRepository.persist(order)
+        //order.status = OrderStatus.Close
+        //orderRepository.persist(order)
+
+        val orderRecap = dishJpaRepository.groupOrderDishesByMenuNumber(order.orderId!!).joinToString("\n") {
+            val menuNumber = it[0]
+            val quantity = it[1]
+            val name = it[2]
+            "- number $menuNumber    x $quantity ($name)"
+        }
+
+        Log.info(orderRecap)
+
         return MessageUtils.createMessage(
             update,
             "Successfully closed order '${order.name}'. " +
-                    "If you closed it by accident, you have $botReopenOrderTimeout minutes to open it back."
+                    "If you closed it by accident, you have $botReopenOrderTimeout minutes to open it back." +
+                    "\n\n```\n$orderRecap\n```",
+            true
         )
     }
 }
