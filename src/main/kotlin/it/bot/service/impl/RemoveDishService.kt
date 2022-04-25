@@ -52,7 +52,7 @@ class RemoveDishService(
         return when {
             user == null -> UserUtils.getUserDoesNotBelongToOrderMessage(update)
             user.order?.status == OrderStatus.Close ->
-                OrderUtils.getOrderMustBeInOpenStateMessage(update, user.order?.name!!)
+                OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, user.order?.name!!)
             else -> subtractQuantityOrDeleteDish(update, dishMenuNumber, quantityToRemove, user)
         }
     }

@@ -42,7 +42,8 @@ class JoinOrderService(
 
         return when {
             order == null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
-            order?.status == OrderStatus.Close -> OrderUtils.getOrderMustBeInOpenStateMessage(update, orderName)
+            order?.status == OrderStatus.Close ->
+                OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, orderName)
             else -> {
                 val userEntity = UserEntity().apply {
                     telegramUserId = MessageUtils.getTelegramUserId(update)

@@ -15,11 +15,11 @@ object OrderUtils {
         )
     }
 
-    fun getOrderMustBeInOpenStateMessage(update: Update, orderName: String): SendMessage {
+    fun getOperationNotAllowedWhenOrderIsClosedMessage(update: Update, orderName: String): SendMessage {
         Log.error("order $orderName is closed for chatId ${MessageUtils.getChatId(update)}")
         return MessageUtils.createMessage(
             update,
-            "Error: you can not perform this operation when order '$orderName' is closed"
+            "Error: you cannot perform this operation when order '$orderName' is closed"
         )
     }
 
