@@ -69,15 +69,22 @@ class BlameDishService(
 
     private fun formatUsersWhoOrderedDish(update: Update, userDishes: List<UserDishEntity>): String {
         return userDishes.joinToString("\n") {
-            Log.info("${it.user?.telegramUserId} ${it.dish?.order?.chatId}")
             "- ${FormatUtils.tagUsername(getUserName(it))} x ${it.quantity}"
         }
     }
 
     private fun getUserName(userDish: UserDishEntity): String? {
-        val chatId = userDish.dish?.order?.chatId ?: return ""
-        val telegramUserId = userDish.user?.telegramUserId ?: return ""
-        return getChatMember(chatId, telegramUserId)?.username
+        val chatId = userDish.dish?.order?.chatId
+        val telegramUserId = userDish.user?.telegramUserId
+        return if (chatId == null || telegramUserId == null) {
+            Log.error(
+                "Warning: chatId $chatId or telegramUserId $telegramUserId are null, userDish ${userDish.userDishId}"
+            )
+            null
+        } else {
+            Log.info("Getting username for user $telegramUserId, chat $chatId")
+            getChatMember(chatId, telegramUserId)?.username
+        }
     }
 
     private fun getChatMember(chatId: Long, telegramUserId: Long): TelegramUserDto? {
@@ -101,8 +108,7 @@ class BlameDishService(
             }
         } catch (exception: Exception) {
             Log.error(
-                "could not retrieve information for user $telegramUserId " +
-                        "in chat $chatId", exception
+                "could not retrieve information for user $telegramUserId in chat $chatId", exception
             )
             return null
         }
