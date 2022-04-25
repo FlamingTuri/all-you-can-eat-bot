@@ -42,7 +42,7 @@ class BlameDishService(
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val (dishMenuNumber, orderName) = destructure(matchResult)
 
-        val userDishes = userDishRepository.findUserDishes(dishMenuNumber, MessageUtils.getTelegramUserId(update))
+        val userDishes = userDishRepository.findUserDishes(dishMenuNumber, MessageUtils.getChatId(update))
 
         val message = if (userDishes.isEmpty()) {
             "Error: dish $dishMenuNumber not found for orders, " +
