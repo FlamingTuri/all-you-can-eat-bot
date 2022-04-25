@@ -9,6 +9,7 @@ import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
+import it.bot.util.UserUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -46,23 +47,19 @@ class AddDishService(
         }
 
         val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))
-        if (user == null) {
-            Log.error("user ${MessageUtils.getTelegramUserId(update)} not found")
-            return MessageUtils.createMessage(
+        return if (user == null) {
+            UserUtils.getUserDoesNotBelongToOrderMessage(update)
+        } else {
+            val dish = createOrUpdateDish(user, dishMenuNumber, dishName)
+
+            val userDish = addToUserDishes(user, dish, dishQuantity)
+
+            MessageUtils.createMessage(
                 update,
-                "Error: you are not part of an order. Use /joinOrder command before adding a dish"
+                "Successfully add number ${formatDishInfo(dish)} to order '${user.order!!.name}' " +
+                        "(your quantity: ${userDish.quantity})"
             )
         }
-
-        val dish = createOrUpdateDish(user, dishMenuNumber, dishName)
-
-        val userDish = addToUserDishes(user, dish, dishQuantity)
-
-        return MessageUtils.createMessage(
-            update,
-            "Successfully add number ${formatDishInfo(dish)} to order '${user.order!!.name}' " +
-                    "(your quantity: ${userDish.quantity})"
-        )
     }
 
     private fun destructure(matchResult: MatchResult): Triple<Int, Int, String?> {
