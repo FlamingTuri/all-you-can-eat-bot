@@ -8,6 +8,7 @@ import it.bot.repository.DishRepository
 import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
+import it.bot.util.DishUtils
 import it.bot.util.MessageUtils
 import it.bot.util.UserUtils
 import javax.enterprise.context.ApplicationScoped
@@ -56,8 +57,8 @@ class AddDishService(
 
             MessageUtils.createMessage(
                 update,
-                "Successfully add number ${formatDishInfo(dish)} to order '${user.order!!.name}' " +
-                        "(your quantity: ${userDish.quantity})"
+                "Successfully add number ${DishUtils.formatDishInfo(dish)} " +
+                        "to order '${user.order!!.name}' (your quantity: ${userDish.quantity})"
             )
         }
     }
@@ -115,9 +116,5 @@ class AddDishService(
         }.also {
             userDishRepository.persist(it)
         }
-    }
-
-    private fun formatDishInfo(dish: DishEntity): String {
-        return dish.name?.let { "${dish.menuNumber} ($it)" } ?: "$dish.menuNumber"
     }
 }

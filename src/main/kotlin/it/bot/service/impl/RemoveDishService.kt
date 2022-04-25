@@ -7,7 +7,6 @@ import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.DishUtils
-import it.bot.util.FormatUtils
 import it.bot.util.MessageUtils
 import it.bot.util.UserUtils
 import javax.enterprise.context.ApplicationScoped
@@ -81,13 +80,13 @@ class RemoveDishService(
             dishRepository.deleteById(userDish.dishId!!)
         }
 
-        return "Successfully removed dish ${userDish.dish?.menuNumber} ${FormatUtils.wrapIfNotNull(userDish.dish?.name)}"
+        return "Successfully removed your dish ${DishUtils.formatDishInfo(userDish.dish!!)}"
     }
 
     private fun subtractQuantity(userDish: UserDishEntity, dishQuantityToRemove: Int): String {
         userDish.quantity = userDish.quantity!! - dishQuantityToRemove
         userDishRepository.persist(userDish)
-        return "Successfully reduced dish ${DishUtils.formatDishInfo(userDish.dish!!)} " +
+        return "Successfully reduced your dish ${DishUtils.formatDishInfo(userDish.dish!!)} " +
                 "quantity to ${userDish.quantity}"
     }
 }
