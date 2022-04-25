@@ -13,7 +13,7 @@ class UserDishRepository : PanacheRepository<UserDishEntity> {
         return find("userId = ?1 and dishId = ?2", user.userId!!, dish.dishId!!).firstResult()
     }
 
-    fun findUserDishes(menuNumber: Int, chatId: Long): List<UserDishEntity> {
+    fun findUserDishes(menuNumber: Int, orderName: String?, chatId: Long): List<UserDishEntity> {
         val query = """
             select ud
             from UserDishEntity ud
@@ -21,7 +21,8 @@ class UserDishRepository : PanacheRepository<UserDishEntity> {
             join OrderEntity o on o.orderId = d.orderId
             where o.chatId = ?1
             and d.menuNumber = ?2
+            and (?3 = '' or o.name = ?3)
         """
-        return find(query, chatId, menuNumber).list()
+        return find(query, chatId, menuNumber, orderName ?: "").list()
     }
 }

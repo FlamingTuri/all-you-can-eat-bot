@@ -42,9 +42,10 @@ class BlameDishService(
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val (dishMenuNumber, orderName) = destructure(matchResult)
 
-        val userDishes = userDishRepository.findUserDishes(dishMenuNumber, MessageUtils.getChatId(update))
+        val userDishes = userDishRepository.findUserDishes(dishMenuNumber, orderName, MessageUtils.getChatId(update))
 
         val message = if (userDishes.isEmpty()) {
+            Log.error("dish number $dishMenuNumber not found for chat ${MessageUtils.getChatId(update)} and order name $orderName")
             "Error: dish $dishMenuNumber not found for orders, " +
                     "make sure you used /blame command in the correct chat"
         } else {
@@ -63,7 +64,7 @@ class BlameDishService(
     }
 
     private fun destructure(matchResult: MatchResult): Pair<Int, String?> {
-        val (_, dishMenuNumber, _, orderName) = matchResult.destructured
+        val (_, dishMenuNumber, _, _, orderName) = matchResult.destructured
         return Pair(dishMenuNumber.toInt(), if (orderName == "") null else orderName)
     }
 
