@@ -1,13 +1,10 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
-import it.bot.model.dto.DishDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
-import it.bot.repository.DishJpaRepository
 import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
-import it.bot.util.FormatUtils
 import it.bot.util.MessageUtils
 import it.bot.util.OrderUtils
 import javax.enterprise.context.ApplicationScoped
@@ -21,7 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class CloseOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
     @Inject private val orderRepository: OrderRepository,
-    @Inject private val dishJpaRepository: DishJpaRepository
+    @Inject private val showOrderService: ShowOrderService
 ) : CommandParserService() {
 
     override val command: String = "/closeOrder"
@@ -58,27 +55,12 @@ class CloseOrderService(
         order.status = OrderStatus.Close
         orderRepository.persist(order)
 
-        val orderDishes = dishJpaRepository.groupOrderDishesByMenuNumber(order.orderId!!).map {
-            val menuNumber = it[0] as Int
-            val quantity = it[1] as Long
-            val name = it[2] as String
-            DishDto(menuNumber, quantity, name)
-        }
+        val orderDishes = showOrderService.groupOrderDishesByMenuNumber(order)
 
-        val maxMenuNumber = orderDishes.maxOf { it.menuNumber }
-        val padding = "$maxMenuNumber".length
+        val messageText = "Successfully closed order '${order.name}'. " +
+                "If you closed it by accident, you have $botReopenOrderTimeout minutes to open it back." +
+                "\n\n${OrderUtils.createOrderRecap(orderDishes)}"
 
-        val orderRecap = orderDishes.joinToString("\n") {
-            val paddedMenuNumber = "${it.menuNumber}".padEnd(padding)
-            "- number $paddedMenuNumber    x ${it.quantity}  ${FormatUtils.wrapIfNotNull(it.name)}"
-        }
-
-        return MessageUtils.createMessage(
-            update,
-            "Successfully closed order '${order.name}'. " +
-                    "If you closed it by accident, you have $botReopenOrderTimeout minutes to open it back." +
-                    "\n\n```\n$orderRecap\n```",
-            true
-        )
+        return MessageUtils.createMessage(update, messageText)
     }
 }
