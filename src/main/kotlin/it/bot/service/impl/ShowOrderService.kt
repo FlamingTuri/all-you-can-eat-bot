@@ -30,7 +30,7 @@ class ShowOrderService(
         return super.parseUpdate(update)
     }
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
+    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val (_, orderName, _) = matchResult.destructured
 
         return when (val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(update), orderName)) {
