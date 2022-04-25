@@ -1,9 +1,14 @@
 package it.bot.service.impl
 
+import io.quarkus.logging.Log
 import io.quarkus.runtime.Startup
 import it.bot.client.rest.TelegramRestClient
 import it.bot.model.dto.TelegramUserDto
+import it.bot.model.entity.UserDishEntity
+import it.bot.model.entity.UserEntity
+import it.bot.repository.UserDishRepository
 import it.bot.service.interfaces.CommandParserService
+import it.bot.util.FormatUtils
 import it.bot.util.MessageUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -16,7 +21,8 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @Startup
 @ApplicationScoped
 class BlameDishService(
-    @ConfigProperty(name = "bot.token") private val botToken: String
+    @ConfigProperty(name = "bot.token") private val botToken: String,
+    @Inject private val userDishRepository: UserDishRepository
 ) : CommandParserService() {
 
     @Inject
@@ -37,7 +43,24 @@ class BlameDishService(
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val (dishMenuNumber, orderName) = destructure(matchResult)
 
-        return MessageUtils.createMessage(update, "asd")
+        val userDishes = userDishRepository.findUserDishes(dishMenuNumber, MessageUtils.getTelegramUserId(update))
+
+        val message = if (userDishes.isEmpty()) {
+            "Error: dish $dishMenuNumber not found for orders, " +
+                    "make sure you used /blame command in the correct chat"
+        } else {
+            val dish = userDishes.first().dish
+
+            Log.info(
+                "Dish ${dish?.menuNumber} was ordered by users " +
+                        userDishes.joinToString(", ") { it.dishId.toString() }
+            )
+
+            "Dish ${dish?.menuNumber} ${FormatUtils.wrapIfNotNull(dish?.name)} was ordered by:" +
+                    "\n\n${formatUsersWhoOrderedDish(update, userDishes)}"
+        }
+
+        return MessageUtils.createMessage(update, message)
     }
 
     private fun destructure(matchResult: MatchResult): Pair<Int, String?> {
@@ -45,19 +68,42 @@ class BlameDishService(
         return Pair(dishMenuNumber.toInt(), if (orderName == "") null else orderName)
     }
 
-    private fun getChatMember(update: Update): TelegramUserDto? {
-        // TODO: understand why deserialization does not work and it should be done manually
-        return telegramRestClient.getChatMember(
-            botToken, MessageUtils.getChatId(update), MessageUtils.getTelegramUserId(update)
-        ).result["user"]?.let {
-            TelegramUserDto(
-                it["id"] as Long,
-                it["is_bot"] as Boolean,
-                it["first_name"] as String,
-                it["last_name"] as String,
-                it["username"] as String,
-                it["language_code"] as String
+    private fun getUserName(update: Update, user: UserEntity?): String? {
+        return user?.telegramUserId?.let { getChatMember(update, it) }?.let { it.username }
+    }
+
+    private fun getChatMember(update: Update, telegramUserId: Long): TelegramUserDto? {
+        try {
+            // TODO: understand why deserialization does not work and it should be done manually
+            val response = telegramRestClient.getChatMember(
+                botToken, MessageUtils.getChatId(update), telegramUserId
             )
+
+            return response.result["user"]?.let { it ->
+                (it as Map<*, *>)
+            }?.let {
+                TelegramUserDto(
+                    "${it["id"]}".toLong(),
+                    it["is_bot"] as Boolean,
+                    it["first_name"] as String,
+                    it["last_name"] as String,
+                    it["username"] as String,
+                    it["language_code"] as String
+                )
+            }
+        } catch (exception: Exception) {
+            Log.error(
+                "could not retrieve information for user $telegramUserId " +
+                        "in chat ${MessageUtils.getChatId(update)}", exception
+            )
+            return null
+        }
+    }
+
+    private fun formatUsersWhoOrderedDish(update: Update, userDishes: List<UserDishEntity>): String {
+        return userDishes.joinToString("\n") {
+            Log.info("${it.user?.telegramUserId}")
+            "- ${FormatUtils.tagUsername(getUserName(update, it.user))} x ${it.quantity}"
         }
     }
 }

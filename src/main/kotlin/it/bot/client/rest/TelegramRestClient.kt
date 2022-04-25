@@ -18,5 +18,5 @@ interface TelegramRestClient {
         @PathParam("botToken") botToken: String,
         @QueryParam("chat_id") chatId: Long,
         @QueryParam("user_id") userId: Long
-    ): ApiResponse<Map<String, Map<String, Any>>>
+    ): ApiResponse<Map<String, Any>>
 }
