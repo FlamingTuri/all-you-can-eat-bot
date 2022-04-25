@@ -45,19 +45,9 @@ class BlameDishService(
         val userDishes = userDishRepository.findUserDishes(dishMenuNumber, orderName, MessageUtils.getChatId(update))
 
         val message = if (userDishes.isEmpty()) {
-            Log.error("dish number $dishMenuNumber not found for chat ${MessageUtils.getChatId(update)} and order name $orderName")
-            "Error: dish $dishMenuNumber not found for orders, " +
-                    "make sure you used /blame command in the correct chat"
+            getUserDishesNotFoundError(dishMenuNumber, orderName, update)
         } else {
-            val dish = userDishes.first().dish
-
-            Log.info(
-                "Dish ${dish?.menuNumber} was ordered by users " +
-                        userDishes.joinToString(", ") { it.dishId.toString() }
-            )
-
-            "Dish ${dish?.menuNumber} ${FormatUtils.wrapIfNotNull(dish?.name)} was ordered by:" +
-                    "\n\n${formatUsersWhoOrderedDish(update, userDishes)}"
+            getUserDishesFoundMessage(userDishes, update)
         }
 
         return MessageUtils.createMessage(update, message)
@@ -66,6 +56,27 @@ class BlameDishService(
     private fun destructure(matchResult: MatchResult): Pair<Int, String?> {
         val (_, dishMenuNumber, _, _, orderName) = matchResult.destructured
         return Pair(dishMenuNumber.toInt(), if (orderName == "") null else orderName)
+    }
+
+    private fun getUserDishesNotFoundError(dishMenuNumber: Int, orderName: String?, update: Update): String {
+        Log.error(
+            "dish number $dishMenuNumber not found " +
+                    "for chat ${MessageUtils.getChatId(update)} and order name $orderName"
+        )
+        return "Error: dish $dishMenuNumber not found for orders, " +
+                "make sure you used /blame command in the correct chat"
+    }
+
+    private fun getUserDishesFoundMessage(userDishes: List<UserDishEntity>, update: Update): String {
+        val dish = userDishes.first().dish
+
+        Log.info(
+            "Dish ${dish?.menuNumber} was ordered by users " +
+                    userDishes.joinToString(", ") { it.dishId.toString() }
+        )
+
+        return "Dish ${dish?.menuNumber} ${FormatUtils.wrapIfNotNull(dish?.name)} was ordered by:" +
+                "\n\n${formatUsersWhoOrderedDish(update, userDishes)}"
     }
 
     private fun formatUsersWhoOrderedDish(update: Update, userDishes: List<UserDishEntity>): String {
