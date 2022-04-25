@@ -42,18 +42,37 @@ class JoinOrderService(
 
         return when {
             order == null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
-            order?.status == OrderStatus.Close ->
+            order.status == OrderStatus.Close ->
                 OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, orderName)
-            else -> {
-                val userEntity = UserEntity().apply {
-                    telegramUserId = MessageUtils.getTelegramUserId(update)
-                    this.order = order
-                }
-
-                userRepository.persist(userEntity)
-
-                MessageUtils.createMessage(update, "Successfully joined order $orderName")
-            }
+            else -> createUserIfNotAlreadyInAnotherOrder(update, orderName)
         }
+    }
+
+    private fun createUserIfNotAlreadyInAnotherOrder(update: Update, orderName: String): SendMessage {
+        return when (val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))) {
+            null -> createUser(update, orderName)
+            else -> getUserAlreadyJoinedAnotherOrderMessage(update, orderName, user.order?.name!!)
+        }
+    }
+
+    private fun createUser(update: Update, orderName: String): SendMessage {
+        return UserEntity().apply {
+            telegramUserId = MessageUtils.getTelegramUserId(update)
+            this.order = order
+        }.also {
+            userRepository.persist(it)
+        }.let {
+            MessageUtils.createMessage(update, "Successfully joined order '$orderName'")
+        }
+    }
+
+    private fun getUserAlreadyJoinedAnotherOrderMessage(
+        update: Update, orderName: String, joinedOrderName: String
+    ): SendMessage {
+        return MessageUtils.createMessage(
+            update,
+            if (orderName == joinedOrderName) "Error: you have already joined '$orderName'"
+            else "Error: you cannot join '$orderName' order, you must first leave '$joinedOrderName' order"
+        )
     }
 }
