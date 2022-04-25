@@ -24,7 +24,7 @@ class AddDishService(
 
     override val command: String = "/addDish"
 
-    override val commandPattern: String = "(\\s*)(\\d+)((\\s+)(\\d+))?((\\s+)(\\w+))?"
+    override val commandPattern: String = "(\\s*)(\\d+)((\\s+)(\\d+))?((\\s+)(\\w+))?(\\s*)"
 
     override val commandFormat: String = "{menuNumber} {quantity:1} {dishName:}"
 
@@ -66,7 +66,7 @@ class AddDishService(
     }
 
     private fun destructure(matchResult: MatchResult): Triple<Int, Int, String?> {
-        val (_, dishMenuNumber, _, _, dishQuantity, _, _, dishName) = matchResult.destructured
+        val (_, dishMenuNumber, _, _, dishQuantity, _, _, dishName, _) = matchResult.destructured
         return Triple(
             dishMenuNumber.toInt(),
             if (dishQuantity == "") 1 else dishQuantity.toInt(),

@@ -31,7 +31,7 @@ class ShowOrderService(
     }
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
-        val (_, orderName) = matchResult.destructured
+        val (_, orderName, _) = matchResult.destructured
 
         return when (val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(update), orderName)) {
             null -> OrderUtils.getOrderNotFoundMessage(update, orderName)

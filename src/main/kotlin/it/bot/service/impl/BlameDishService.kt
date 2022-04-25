@@ -30,7 +30,7 @@ class BlameDishService(
 
     override val command: String = "/blame"
 
-    override val commandPattern: String = "(\\s*)(\\d+)((\\s+)(\\w+))?"
+    override val commandPattern: String = "(\\s*)(\\d+)((\\s+)(\\w+))?(\\s*)"
 
     override val commandFormat: String = "{menuNumber} {orderName:}"
 
@@ -54,7 +54,7 @@ class BlameDishService(
     }
 
     private fun destructure(matchResult: MatchResult): Pair<Int, String?> {
-        val (_, dishMenuNumber, _, _, orderName) = matchResult.destructured
+        val (_, dishMenuNumber, _, _, orderName, _) = matchResult.destructured
         return Pair(dishMenuNumber.toInt(), if (orderName == "") null else orderName)
     }
 
