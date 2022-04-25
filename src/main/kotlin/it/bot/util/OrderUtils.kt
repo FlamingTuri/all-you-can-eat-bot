@@ -15,6 +15,14 @@ object OrderUtils {
         )
     }
 
+    fun getOrderMustBeInOpenStateMessage(update: Update, orderName: String): SendMessage {
+        Log.error("order $orderName is closed for chatId ${MessageUtils.getChatId(update)}")
+        return MessageUtils.createMessage(
+            update,
+            "Error: you can not perform this operation when order '$orderName' is closed"
+        )
+    }
+
     fun createOrderRecap(orderDishes: List<DishDto>): String {
         val maxMenuNumber = orderDishes.maxOf { it.menuNumber }
         val padding = "$maxMenuNumber".length

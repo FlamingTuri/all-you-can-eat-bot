@@ -4,12 +4,14 @@ import io.quarkus.logging.Log
 import it.bot.model.entity.DishEntity
 import it.bot.model.entity.UserDishEntity
 import it.bot.model.entity.UserEntity
+import it.bot.model.enum.OrderStatus
 import it.bot.repository.DishRepository
 import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.DishUtils
 import it.bot.util.MessageUtils
+import it.bot.util.OrderUtils
 import it.bot.util.UserUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -48,18 +50,11 @@ class AddDishService(
         }
 
         val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))
-        return if (user == null) {
-            UserUtils.getUserDoesNotBelongToOrderMessage(update)
-        } else {
-            val dish = createOrUpdateDish(user, dishMenuNumber, dishName)
-
-            val userDish = addToUserDishes(user, dish, dishQuantity)
-
-            MessageUtils.createMessage(
-                update,
-                "Successfully add number ${DishUtils.formatDishInfo(dish)} " +
-                        "to order '${user.order!!.name}' (your quantity: ${userDish.quantity})"
-            )
+        return when {
+            user == null -> UserUtils.getUserDoesNotBelongToOrderMessage(update)
+            user.order?.status == OrderStatus.Close ->
+                OrderUtils.getOrderMustBeInOpenStateMessage(update, user.order?.name!!)
+            else -> addDishToOrder(update, user, dishMenuNumber, dishName, dishQuantity)
         }
     }
 
@@ -69,6 +64,20 @@ class AddDishService(
             dishMenuNumber.toInt(),
             if (dishQuantity == "") 1 else dishQuantity.toInt(),
             if (dishName == "") null else dishName
+        )
+    }
+
+    private fun addDishToOrder(
+        update: Update, user: UserEntity, dishMenuNumber: Int, dishName: String?, dishQuantity: Int
+    ): SendMessage {
+        val dish = createOrUpdateDish(user, dishMenuNumber, dishName)
+
+        val userDish = addToUserDishes(user, dish, dishQuantity)
+
+        return MessageUtils.createMessage(
+            update,
+            "Successfully add number ${DishUtils.formatDishInfo(dish)} " +
+                    "to order '${user.order!!.name}' (your quantity: ${userDish.quantity})"
         )
     }
 
@@ -99,13 +108,11 @@ class AddDishService(
 
     private fun addToUserDishes(user: UserEntity, dish: DishEntity, dishQuantity: Int): UserDishEntity {
         val existingUserDish = userDishRepository.findUserDish(user, dish)
-        return if (existingUserDish == null) {
-            createUserDish(user, dish, dishQuantity)
-        } else {
-            existingUserDish.quantity = existingUserDish.quantity?.plus(dishQuantity)
-            userDishRepository.persist(existingUserDish)
-            existingUserDish
-        }
+        return existingUserDish?.apply {
+            quantity = existingUserDish.quantity?.plus(dishQuantity)
+        }?.also {
+            userDishRepository.persist(it)
+        } ?: createUserDish(user, dish, dishQuantity)
     }
 
     private fun createUserDish(user: UserEntity, dish: DishEntity, dishQuantity: Int): UserDishEntity {
