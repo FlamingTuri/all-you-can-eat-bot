@@ -47,7 +47,7 @@ class BlameDishService(
         val message = if (userDishes.isEmpty()) {
             getUserDishesNotFoundError(dishMenuNumber, orderName, update)
         } else {
-            getUserDishesFoundMessage(userDishes, update)
+            getUserDishesFoundMessage(userDishes)
         }
 
         return MessageUtils.createMessage(update, message)
@@ -67,7 +67,7 @@ class BlameDishService(
                 "make sure you used /blame command in the correct chat"
     }
 
-    private fun getUserDishesFoundMessage(userDishes: List<UserDishEntity>, update: Update): String {
+    private fun getUserDishesFoundMessage(userDishes: List<UserDishEntity>): String {
         val dish = userDishes.first().dish
 
         Log.info(
@@ -76,10 +76,10 @@ class BlameDishService(
         )
 
         return "Dish ${dish?.menuNumber} ${FormatUtils.wrapIfNotNull(dish?.name)} was ordered by:" +
-                "\n\n${formatUsersWhoOrderedDish(update, userDishes)}"
+                "\n\n${formatUsersWhoOrderedDish(userDishes)}"
     }
 
-    private fun formatUsersWhoOrderedDish(update: Update, userDishes: List<UserDishEntity>): String {
+    private fun formatUsersWhoOrderedDish(userDishes: List<UserDishEntity>): String {
         return userDishes.joinToString("\n") {
             "- ${FormatUtils.tagUsername(getUserName(it))} x ${it.quantity}"
         }
