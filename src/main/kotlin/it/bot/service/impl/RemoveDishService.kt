@@ -2,12 +2,15 @@ package it.bot.service.impl
 
 import io.quarkus.logging.Log
 import it.bot.model.entity.UserDishEntity
+import it.bot.model.entity.UserEntity
+import it.bot.model.enum.OrderStatus
 import it.bot.repository.DishRepository
 import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.DishUtils
 import it.bot.util.MessageUtils
+import it.bot.util.OrderUtils
 import it.bot.util.UserUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -46,18 +49,11 @@ class RemoveDishService(
         }
 
         val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))
-        return if (user == null) {
-            UserUtils.getUserDoesNotBelongToOrderMessage(update)
-        } else {
-            val userDish = userDishRepository.findUserDish(dishMenuNumber, user.telegramUserId!!)
-
-            val messageText = when {
-                userDish == null -> "Dish $dishMenuNumber not found"
-                (quantityToRemove == null) || (userDish.quantity!! <= quantityToRemove) -> deleteUserDish(userDish)
-                else -> subtractQuantity(userDish, quantityToRemove)
-            }
-
-            return MessageUtils.createMessage(update, messageText)
+        return when {
+            user == null -> UserUtils.getUserDoesNotBelongToOrderMessage(update)
+            user.order?.status == OrderStatus.Close ->
+                OrderUtils.getOrderMustBeInOpenStateMessage(update, user.order?.name!!)
+            else -> subtractQuantityOrDeleteDish(update, dishMenuNumber, quantityToRemove, user)
         }
     }
 
@@ -67,6 +63,20 @@ class RemoveDishService(
             dishMenuNumber.toInt(),
             if (dishQuantity == "") null else dishQuantity.toInt(),
         )
+    }
+
+    private fun subtractQuantityOrDeleteDish(
+        update: Update, dishMenuNumber: Int, quantityToRemove: Int?, user: UserEntity
+    ): SendMessage {
+        val userDish = userDishRepository.findUserDish(dishMenuNumber, user.telegramUserId!!)
+
+        val messageText = when {
+            userDish == null -> "Dish $dishMenuNumber not found"
+            (quantityToRemove == null) || (userDish.quantity!! <= quantityToRemove) -> deleteUserDish(userDish)
+            else -> subtractQuantity(userDish, quantityToRemove)
+        }
+
+        return MessageUtils.createMessage(update, messageText)
     }
 
     private fun deleteUserDish(userDish: UserDishEntity): String {
