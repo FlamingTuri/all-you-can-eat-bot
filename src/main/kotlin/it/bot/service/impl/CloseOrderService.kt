@@ -9,6 +9,7 @@ import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.FormatUtils
 import it.bot.util.MessageUtils
+import it.bot.util.OrderUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -39,18 +40,10 @@ class CloseOrderService(
         val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(update), orderName)
 
         return when {
-            order == null -> getOrderNotFoundMessage(update, orderName)
+            order == null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
             order.status == OrderStatus.Close -> getOrderAlreadyClosedMessage(update, order)
             else -> closeOrder(update, order)
         }
-    }
-
-    private fun getOrderNotFoundMessage(update: Update, orderName: String): SendMessage {
-        Log.error("order $orderName not found for chatId ${MessageUtils.getChatId(update)}")
-        return MessageUtils.createMessage(
-            update,
-            "Error: order '$orderName' not found closed order in the current chat"
-        )
     }
 
     private fun getOrderAlreadyClosedMessage(update: Update, order: OrderEntity): SendMessage {

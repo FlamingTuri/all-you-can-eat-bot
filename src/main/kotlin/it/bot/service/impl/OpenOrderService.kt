@@ -6,6 +6,7 @@ import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
+import it.bot.util.OrderUtils
 import java.util.Calendar
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -37,18 +38,10 @@ class OpenOrderService(
         val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(update), orderName)
 
         return when {
-            order == null -> getOrderNotFoundMessage(update, orderName)
+            order == null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
             order.status == OrderStatus.Open -> getOrderAlreadyOpenMessage(update, order)
             else -> openOrderIfTimeoutIsNotElapsed(update, order)
         }
-    }
-
-    private fun getOrderNotFoundMessage(update: Update, orderName: String): SendMessage {
-        Log.error("order $orderName not found for chatId ${MessageUtils.getChatId(update)}")
-        return MessageUtils.createMessage(
-            update,
-            "Error: order '$orderName' not found closed order in the current chat"
-        )
     }
 
     private fun getOrderAlreadyOpenMessage(update: Update, order: OrderEntity): SendMessage {
