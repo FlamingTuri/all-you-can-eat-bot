@@ -10,4 +10,13 @@ class DishRepository : PanacheRepository<DishEntity> {
     fun findDish(menuNumber: Int, orderId: Long): DishEntity? {
         return find("menuNumber = ?1 and orderId = ?2", menuNumber, orderId).firstResult()
     }
+
+    fun updateDishName(menuNumber: Int, dishName: String, orderId: Long) {
+        val query = """
+            update DishEntity d 
+            set d.name = ?1
+            where d.menuNumber = ?2 and d.orderId = ?3
+        """
+        update(query, dishName, menuNumber, orderId)
+    }
 }
