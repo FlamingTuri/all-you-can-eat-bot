@@ -1,13 +1,13 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
-import it.bot.model.entity.DishEntity
 import it.bot.model.entity.UserDishEntity
-import it.bot.model.entity.UserEntity
 import it.bot.repository.DishRepository
 import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
+import it.bot.util.DishUtils
+import it.bot.util.FormatUtils
 import it.bot.util.MessageUtils
 import it.bot.util.UserUtils
 import javax.enterprise.context.ApplicationScoped
@@ -53,31 +53,13 @@ class RemoveDishService(
             val userDish = userDishRepository.findUserDish(dishMenuNumber, user.telegramUserId!!)
 
             val messageText = when {
-                userDish == null -> "TODO"
+                userDish == null -> "Dish $dishMenuNumber not found"
                 (quantityToRemove == null) || (userDish.quantity!! <= quantityToRemove) -> deleteUserDish(userDish)
                 else -> subtractQuantity(userDish, quantityToRemove)
             }
 
             return MessageUtils.createMessage(update, messageText)
         }
-    }
-
-    private fun deleteUserDish(userDish: UserDishEntity): String {
-        userDishRepository.delete(userDish)
-
-        val orderHasDishes = userDishRepository.checkIfOrderHasDishes(userDish)
-
-        if (!orderHasDishes) {
-            dishRepository.deleteById(userDish.dishId!!)
-        }
-
-        return "TODO"
-    }
-
-    private fun subtractQuantity(userDish: UserDishEntity, dishQuantityToRemove: Int): String {
-        userDish.quantity = userDish.quantity!! - dishQuantityToRemove
-        userDishRepository.persist(userDish)
-        return "TODO"
     }
 
     private fun destructure(matchResult: MatchResult): Pair<Int, Int?> {
@@ -88,53 +70,24 @@ class RemoveDishService(
         )
     }
 
-    private fun createOrUpdateDish(user: UserEntity, dishMenuNumber: Int, dishName: String?): DishEntity {
-        val existingDish = dishRepository.findDish(dishMenuNumber, user.orderId!!)
+    private fun deleteUserDish(userDish: UserDishEntity): String {
+        Log.info("deleting user dish ${userDish.userDishId}")
+        userDishRepository.delete(userDish)
 
-        val dish = existingDish?.apply {
-            dishName?.let {
-                Log.info("order ${user.orderId}: updating dish $menuNumber - $it")
-                name = it
-                dishRepository.persist(existingDish)
-            }
-        } ?: createDish(user, dishMenuNumber, dishName).also {
-            dishRepository.persist(it)
+        val orderHasDishes = userDishRepository.checkIfOrderHasDishes(userDish)
+
+        if (!orderHasDishes) {
+            Log.info("deleting dish ${userDish.dishId} since it does not belong to any user")
+            dishRepository.deleteById(userDish.dishId!!)
         }
 
-        return dish
+        return "Successfully removed dish ${userDish.dish?.menuNumber} ${FormatUtils.wrapIfNotNull(userDish.dish?.name)}"
     }
 
-    private fun createDish(user: UserEntity, dishMenuNumber: Int, dishName: String?): DishEntity {
-        Log.info("order ${user.orderId}: adding dish $dishMenuNumber - $dishName")
-        return DishEntity().apply {
-            menuNumber = dishMenuNumber
-            name = dishName
-            order = user.order
-        }
-    }
-
-    private fun addToUserDishes(user: UserEntity, dish: DishEntity, dishQuantity: Int): UserDishEntity {
-        val existingUserDish = userDishRepository.findUserDish(user, dish)
-        return if (existingUserDish == null) {
-            createUserDish(user, dish, dishQuantity)
-        } else {
-            existingUserDish.quantity = existingUserDish.quantity?.plus(dishQuantity)
-            userDishRepository.persist(existingUserDish)
-            existingUserDish
-        }
-    }
-
-    private fun createUserDish(user: UserEntity, dish: DishEntity, dishQuantity: Int): UserDishEntity {
-        return UserDishEntity().apply {
-            quantity = dishQuantity
-            this.user = user
-            this.dish = dish
-        }.also {
-            userDishRepository.persist(it)
-        }
-    }
-
-    private fun formatDishInfo(dish: DishEntity): String {
-        return dish.name?.let { "${dish.menuNumber} ($it)" } ?: "$dish.menuNumber"
+    private fun subtractQuantity(userDish: UserDishEntity, dishQuantityToRemove: Int): String {
+        userDish.quantity = userDish.quantity!! - dishQuantityToRemove
+        userDishRepository.persist(userDish)
+        return "Successfully reduced dish ${DishUtils.formatDishInfo(userDish.dish!!)} " +
+                "quantity to ${userDish.quantity}"
     }
 }
