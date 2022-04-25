@@ -13,6 +13,19 @@ class UserDishRepository : PanacheRepository<UserDishEntity> {
         return find("userId = ?1 and dishId = ?2", user.userId!!, dish.dishId!!).firstResult()
     }
 
+    fun findUserDish(menuNumber: Int, telegramUserId: Long): UserDishEntity? {
+        val query = """
+            select ud
+            from UserDishEntity ud
+            join DishEntity d on d.dishId = ud.dishId
+            join OrderEntity o on o.orderId = d.orderId
+            join User u on u.orderId = o.orderId
+            where u.telegramUserId = ?1
+            and d.menuNumber = ?2
+        """
+        return find(query, telegramUserId, menuNumber).firstResult()
+    }
+
     fun findUserDishes(menuNumber: Int, orderName: String?, chatId: Long): List<UserDishEntity> {
         val query = """
             select ud
