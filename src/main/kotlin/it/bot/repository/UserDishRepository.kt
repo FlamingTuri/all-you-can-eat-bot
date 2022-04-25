@@ -19,7 +19,7 @@ class UserDishRepository : PanacheRepository<UserDishEntity> {
             from UserDishEntity ud
             join DishEntity d on d.dishId = ud.dishId
             join OrderEntity o on o.orderId = d.orderId
-            join User u on u.orderId = o.orderId
+            join UserEntity u on u.orderId = o.orderId
             where u.telegramUserId = ?1
             and d.menuNumber = ?2
         """
@@ -37,5 +37,21 @@ class UserDishRepository : PanacheRepository<UserDishEntity> {
             and (?3 = '' or o.name = ?3)
         """
         return find(query, chatId, menuNumber, orderName ?: "").list()
+    }
+
+    fun checkIfOrderHasDishes(userDish: UserDishEntity): Boolean {
+        return checkIfOrderHasDishes(userDish?.user?.orderId, userDish.dish?.menuNumber)
+    }
+
+    private fun checkIfOrderHasDishes(orderId: Long?, menuNumber: Int?): Boolean {
+        val query = """
+            select ud
+            from UserDishEntity ud
+            join DishEntity d on d.dishId = ud.dishId
+            join OrderEntity o on o.orderId = d.orderId
+            where o.orderId = ?1
+            and d.menuNumber = ?2
+        """
+        return find(query, orderId!!, menuNumber!!).count() > 0
     }
 }

@@ -64,6 +64,13 @@ class RemoveDishService(
 
     private fun deleteUserDish(userDish: UserDishEntity): String {
         userDishRepository.delete(userDish)
+
+        val orderHasDishes = userDishRepository.checkIfOrderHasDishes(userDish)
+
+        if (!orderHasDishes) {
+            dishRepository.deleteById(userDish.dishId!!)
+        }
+
         return "TODO"
     }
 
