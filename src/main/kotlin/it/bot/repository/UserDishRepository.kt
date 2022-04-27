@@ -54,4 +54,15 @@ class UserDishRepository : PanacheRepository<UserDishEntity> {
         """
         return find(query, orderId!!, menuNumber!!).count() > 0
     }
+
+    fun checkIfOrderHasUserDishes(orderId: Long, userId: Long): Boolean {
+        val query = """
+            select ud
+            from UserDishEntity ud
+            join UserEntity u on u.userId = ud.userId
+            where u.orderId = ?1
+            and u.userId = ?2
+        """
+        return find(query, orderId, userId).count() > 0
+    }
 }
