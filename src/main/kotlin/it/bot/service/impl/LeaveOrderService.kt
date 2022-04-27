@@ -7,6 +7,7 @@ import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
+import it.bot.util.TimeUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -41,12 +42,25 @@ class LeaveOrderService(
         val user = userRepository.findUser(telegramUserId, chatId, orderName)
 
         val messageText = when {
-            user == null -> "Error: can not leave order '$orderName' since you are not part of it"
-            OrderStatus.Open == user.order?.status -> leaveOpenOrderIfNoUserDishesArePresent(user)
-            else -> "TODO"
+            user == null -> getUserForOrderNotFoundErrorMessage(orderName)
+            OrderStatus.Close == user.order?.status -> getLeaveClosedOrderErrorMessage(user)
+            else -> leaveOpenOrderIfNoUserDishesArePresent(user)
         }
 
         return MessageUtils.createMessage(update, messageText)
+    }
+
+    private fun getUserForOrderNotFoundErrorMessage(orderName: String): String {
+        return "Error: can not leave order '$orderName' since you are not part of it"
+    }
+
+    private fun getLeaveClosedOrderErrorMessage(user: UserEntity): String {
+        val timeElapsed = TimeUtils.hasTimeElapsed(user.order!!, botReopenOrderTimeout)
+        return if (timeElapsed) {
+            "Error: you can not leave a closed order, but you can join a new one"
+        } else {
+            "Error: you can not leave a closed order, that could be reopened"
+        }
     }
 
     private fun leaveOpenOrderIfNoUserDishesArePresent(user: UserEntity): String {
