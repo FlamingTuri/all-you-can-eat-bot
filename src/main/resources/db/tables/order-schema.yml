@@ -53,3 +53,10 @@ databaseChangeLog:
       changes:
         - createSequence:
             sequenceName: order_sequence
+  - changeSet:
+      id: 4-order
+      author: gventurini
+      changes:
+        - addUniqueConstraint:
+            tableName: order
+            columnNames: name, chat_id
