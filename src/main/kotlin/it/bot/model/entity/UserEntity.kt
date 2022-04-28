@@ -7,7 +7,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
-import javax.persistence.OneToOne
+import javax.persistence.ManyToOne
 import javax.persistence.SequenceGenerator
 import javax.persistence.Table
 
@@ -31,7 +31,7 @@ class UserEntity : AbstractEntity() {
     @Column(name = "order_id", nullable = false, insertable = false, updatable = false)
     var orderId: Long? = null
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", /*referencedColumnName = "order_id",*/ nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
     var order: OrderEntity? = null
 }
