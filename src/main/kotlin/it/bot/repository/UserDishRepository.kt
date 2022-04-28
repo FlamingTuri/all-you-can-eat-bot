@@ -40,7 +40,7 @@ class UserDishRepository : PanacheRepository<UserDishEntity> {
     }
 
     fun checkIfOrderHasDishes(userDish: UserDishEntity): Boolean {
-        return checkIfOrderHasDishes(userDish?.user?.orderId, userDish.dish?.menuNumber)
+        return checkIfOrderHasDishes(userDish.user?.orderId, userDish.dish?.menuNumber)
     }
 
     private fun checkIfOrderHasDishes(orderId: Long?, menuNumber: Int?): Boolean {
