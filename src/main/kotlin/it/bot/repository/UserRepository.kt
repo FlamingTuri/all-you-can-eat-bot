@@ -22,4 +22,20 @@ class UserRepository : PanacheRepository<UserEntity> {
         """
         return find(query, telegramUserId, chatId, orderName).firstResult()
     }
+
+    fun findUsers(telegramUserId: Long): List<UserEntity> {
+        val query = "telegramUserId = ?1"
+        return find(query, telegramUserId).list()
+    }
+
+    fun findUsers(telegramUserId: Long, chatId: Long): List<UserEntity> {
+        val query = """
+            select *
+            from UserEntity u
+            join OrderEntity o on o.orderId = u.orderId
+            where u.telegramUserId = ?1
+            and o.chatId = ?2
+        """
+        return find(query, telegramUserId, chatId).list()
+    }
 }

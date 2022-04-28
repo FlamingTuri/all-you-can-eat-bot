@@ -1,5 +1,6 @@
 package it.bot.service.impl
 
+import it.bot.model.entity.OrderEntity
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
@@ -10,11 +11,13 @@ import it.bot.util.OrderUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @ApplicationScoped
 class JoinOrderService(
+    @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
     @Inject private val orderRepository: OrderRepository,
     @Inject private val userRepository: UserRepository,
 ) : CommandParserService() {
@@ -44,18 +47,34 @@ class JoinOrderService(
             order == null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
             order.status == OrderStatus.Close ->
                 OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, orderName)
-            else -> createUserIfNotAlreadyInAnotherOrder(update, orderName)
+            else -> createUserIfNotAlreadyInAnotherOrder(update, order, orderName)
         }
     }
 
-    private fun createUserIfNotAlreadyInAnotherOrder(update: Update, orderName: String): SendMessage {
-        return when (val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))) {
-            null -> createUser(update, orderName)
-            else -> getUserAlreadyJoinedAnotherOrderMessage(update, orderName, user.order?.name!!)
-        }
+    private fun createUserIfNotAlreadyInAnotherOrder(
+        update: Update,
+        order: OrderEntity,
+        orderName: String
+    ): SendMessage {
+        val telegramUserId = MessageUtils.getTelegramUserId(update)
+        val users = userRepository.findUsers(telegramUserId)
+
+        return users.firstOrNull {
+            OrderUtils.isClosedAndElapsed(it.order!!, botReopenOrderTimeout)
+        }?.let {
+            MessageUtils.createMessage(
+                update,
+                "Error: you can not join another order since " +
+                        "the order '${it.order?.name}' can still be reopened"
+            )
+        } ?: users.firstOrNull {
+            it.order?.status == OrderStatus.Open
+        }?.let {
+            getUserAlreadyJoinedAnotherOrderMessage(update, orderName, it.order?.name!!)
+        } ?: createUser(update, order, orderName)
     }
 
-    private fun createUser(update: Update, orderName: String): SendMessage {
+    private fun createUser(update: Update, order: OrderEntity, orderName: String): SendMessage {
         return UserEntity().apply {
             telegramUserId = MessageUtils.getTelegramUserId(update)
             this.order = order
