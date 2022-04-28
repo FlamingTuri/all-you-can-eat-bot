@@ -58,28 +58,21 @@ class AllYouCanEatBot(
 
     private fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
         return if (commandParserService == null) {
-            getCommandNotSupportedMessage(update)
+            Log.error("no command support for '${MessageUtils.getChatMessage(update)}'")
+            null
         } else {
             commandParserService.parseUpdate(update)
         }
     }
 
     private fun sendMessage(message: SendMessage?) {
-        if (message == null) {
-            Log.info("no message to send")
-        } else {
+        message?.also {
             try {
-                execute(message)
+                execute(it)
             } catch (e: TelegramApiException) {
                 Log.error(e)
             }
-        }
-    }
-
-    private fun getCommandNotSupportedMessage(update: Update): SendMessage {
-        val errorMessage = "no command support for '${MessageUtils.getChatMessage(update)}'"
-        Log.error(errorMessage)
-        return MessageUtils.createMessage(update, errorMessage)
+        } ?: Log.info("no message to send")
     }
 
     override fun getBotUsername(): String {
