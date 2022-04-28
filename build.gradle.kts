@@ -33,6 +33,7 @@ dependencies {
     implementation("io.quarkus:quarkus-spring-data-jpa")
     implementation("io.quarkus:quarkus-rest-client")
     implementation("io.quarkus:quarkus-rest-client-jackson")
+    implementation("io.quarkus:quarkus-scheduler")
 
     testImplementation(kotlin("test"))
     testImplementation("io.rest-assured:rest-assured")
