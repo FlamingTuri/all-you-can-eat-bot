@@ -61,7 +61,7 @@ class OpenOrderService(
             )
             MessageUtils.createMessage(
                 update,
-                "Error: order '${order.name}' can not be reopened " +
+                "Error: order '${order.name}' cannot be reopened " +
                         "since it has been closed for more than $botReopenOrderTimeout minutes"
             )
         } else {

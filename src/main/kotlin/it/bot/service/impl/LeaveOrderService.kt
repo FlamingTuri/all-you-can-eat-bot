@@ -51,22 +51,22 @@ class LeaveOrderService(
     }
 
     private fun getUserForOrderNotFoundErrorMessage(orderName: String): String {
-        return "Error: can not leave order '$orderName' since you are not part of it"
+        return "Error: cannot leave order '$orderName' since you are not part of it"
     }
 
     private fun getLeaveClosedOrderErrorMessage(user: UserEntity): String {
         val timeElapsed = TimeUtils.hasTimeElapsed(user.order!!, botReopenOrderTimeout)
         return if (timeElapsed) {
-            "Error: you can not leave a closed order, but you can join a new one"
+            "Error: you cannot leave a closed order, but you can join a new one"
         } else {
-            "Error: you can not leave a closed order, that could be reopened"
+            "Error: you cannot leave a closed order that could be reopened"
         }
     }
 
     private fun leaveOpenOrderIfNoUserDishesArePresent(user: UserEntity): String {
         val orderHasDishes = userDishRepository.checkIfOrderHasUserDishes(user.orderId!!, user.userId!!)
         return if (orderHasDishes) {
-            "Error: can not leave order '${user.order?.name}' since you have dishes on it. First remove them with /removeDish command."
+            "Error: cannot leave order '${user.order?.name}' since you have dishes on it. First remove them with /removeDish command."
         } else {
             userRepository.delete(user)
             "Successfully left order '${user.order?.name}'"

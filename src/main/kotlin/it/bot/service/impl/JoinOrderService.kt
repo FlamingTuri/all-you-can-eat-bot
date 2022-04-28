@@ -64,7 +64,7 @@ class JoinOrderService(
         }?.let {
             MessageUtils.createMessage(
                 update,
-                "Error: you can not join another order since " +
+                "Error: you cannot join another order since " +
                         "the order '${it.order?.name}' can still be reopened"
             )
         } ?: users.firstOrNull {
