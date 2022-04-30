@@ -19,12 +19,11 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CreateOrderServiceTest {
 
-    private lateinit var orderRepository: OrderRepository
+    private val orderRepository = Mockito.mock(OrderRepository::class.java)
     private lateinit var createOrderService: CreateOrderService
 
     @BeforeAll
     fun setup() {
-        orderRepository = Mockito.mock(OrderRepository::class.java)
         createOrderService = CreateOrderService(orderRepository)
     }
 
