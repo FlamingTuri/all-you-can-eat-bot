@@ -38,4 +38,9 @@ class UserRepository : PanacheRepository<UserEntity> {
         """
         return find(query, telegramUserId, chatId).list()
     }
+
+    fun deleteOrderUsers(orderId: Long) {
+        val query = """orderId = ?1"""
+        delete(query, orderId)
+    }
 }
