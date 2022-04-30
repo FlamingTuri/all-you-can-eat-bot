@@ -1,8 +1,11 @@
 package it.bot.unit.service
 
 import io.quarkus.test.junit.QuarkusTest
+import it.bot.model.entity.OrderEntity
+import it.bot.model.messages.OrderMessages
 import it.bot.repository.OrderRepository
 import it.bot.service.impl.CreateOrderService
+import it.bot.unit.util.MockitoUtils
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -26,6 +29,27 @@ class CreateOrderServiceTest {
     }
 
     @Test
+    fun testOrderCreation() {
+        Mockito.`when`(orderRepository.existsOrderWithNameForChat(Mockito.eq(1L), Mockito.anyString()))
+            .thenReturn(false)
+
+        Mockito.doNothing().`when`(orderRepository).persist(MockitoUtils.any(OrderEntity::class.java))
+
+        val orderName = "newOrderName"
+        val update = Update().apply {
+            message = Message().apply {
+                text = "/createOrder $orderName"
+                chat = Chat().apply {
+                    id = 1
+                }
+            }
+        }
+
+        val message = createOrderService.parseUpdate(update)
+        assertEquals(OrderMessages.orderCreationSuccessful(orderName), message!!.text)
+    }
+
+    @Test
     fun testOrderAlreadyExistingForChat() {
         Mockito.`when`(orderRepository.existsOrderWithNameForChat(Mockito.eq(1L), Mockito.anyString()))
             .thenReturn(true)
@@ -38,7 +62,8 @@ class CreateOrderServiceTest {
                 }
             }
         }
+
         val message = createOrderService.parseUpdate(update)
-        assertEquals("Error: an order with the same name already exists for current chat", message!!.text)
+        assertEquals(OrderMessages.orderWithTheSameNameError, message!!.text)
     }
 }
