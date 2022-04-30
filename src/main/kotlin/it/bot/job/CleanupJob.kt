@@ -1,5 +1,6 @@
 package it.bot.job
 
+import io.quarkus.arc.properties.UnlessBuildProperty
 import io.quarkus.logging.Log
 import io.quarkus.scheduler.Scheduled
 import it.bot.repository.DishRepository
@@ -12,6 +13,7 @@ import javax.transaction.Transactional
 import org.eclipse.microprofile.config.inject.ConfigProperty
 
 
+@UnlessBuildProperty(name = "quarkus.profile", stringValue = "test")
 @Suppress("unused")
 @ApplicationScoped
 class CleanupJob(

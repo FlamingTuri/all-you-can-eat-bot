@@ -36,6 +36,8 @@ dependencies {
     implementation("io.quarkus:quarkus-scheduler")
 
     testImplementation(kotlin("test"))
+    testImplementation("io.quarkus:quarkus-junit5")
+    testImplementation("io.quarkus:quarkus-junit5-mockito")
     testImplementation("io.rest-assured:rest-assured")
 }
 
@@ -50,4 +52,6 @@ tasks.withType<KotlinCompile> {
 
 allOpen {
     annotation("javax.persistence.Entity")
+    annotation("javax.enterprise.context.ApplicationScoped")
+    annotation("io.quarkus.test.junit.QuarkusTest")
 }

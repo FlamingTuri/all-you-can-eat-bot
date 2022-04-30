@@ -1,5 +1,6 @@
 package it.bot.service.impl
 
+import io.quarkus.arc.properties.UnlessBuildProperty
 import io.quarkus.runtime.Startup
 import it.bot.AllYouCanEatBot
 import it.bot.service.interfaces.CommandParserService
@@ -10,6 +11,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 
 
+@UnlessBuildProperty(name = "quarkus.profile", stringValue = "test")
 @Startup
 @ApplicationScoped
 class BotService(
@@ -25,7 +27,6 @@ class BotService(
     @Inject val showOrderService: ShowOrderService,
     @Inject val nameDishService: NameDishService,
     @Inject val removeDishService: RemoveDishService
-
 ) {
 
     private val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
