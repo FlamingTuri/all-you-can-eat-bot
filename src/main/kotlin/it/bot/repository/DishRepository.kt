@@ -19,4 +19,16 @@ class DishRepository : PanacheRepository<DishEntity> {
         """
         update(query, dishName, menuNumber, orderId)
     }
+
+    fun deleteOrderDishes(orderId: Long) {
+        val query = """
+            delete DishEntity
+            where dishId in (
+                select d.dishId
+                from DishEntity d
+                where d.orderId = ?1
+            )
+        """
+        delete(query, orderId)
+    }
 }
