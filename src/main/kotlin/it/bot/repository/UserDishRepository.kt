@@ -65,4 +65,17 @@ class UserDishRepository : PanacheRepository<UserDishEntity> {
         """
         return find(query, orderId, userId).count() > 0
     }
+
+    fun deleteOrderUserDishes(orderId: Long) {
+        val query = """
+            delete UserDishEntity
+            where userDishId in (
+                select ud.userDishId
+                from UserDishEntity ud
+                join DishEntity d on d.dishId = ud.dishId
+                where d.orderId = ?1
+            )
+        """
+        delete(query, orderId)
+    }
 }
