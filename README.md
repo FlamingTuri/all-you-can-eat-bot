@@ -7,32 +7,38 @@ registering a group chat orders and provide an order recap once everyone is done
 
 ```bash
 Commands supported by all you can eat bot:
-/start
+
+Bot info commands
+/start 
     - display the welcome message
-/help
+/help 
     - display this help message
+
+Group commands, should be used all in the same group to work
 /createOrder {orderName}
     - create a new order
 /joinOrder {orderName}
     - join an existing OPEN order
 /leaveOrder {orderName}
     - leaves an OPEN order
-/addDish {menuNumber} {quantity:1} {dishName:}
-    - add a dish to your order
 /closeOrder {orderName}
     - close an order, preventing further modifications
 /openOrder {orderName}
     - open a CLOSED order
-/blame {menuNumber} {orderName:}
-    - search who ordered a dish
 /showOrder {orderName}
     - display a recap of an order
+/blame {menuNumber} {orderName:}
+    - search who ordered a dish
+
+Unrestricted commands, can be used directly in the bot chat to avoid flooding groups with messages
+/addDish {menuNumber} {quantity:1} {dishName:}
+    - add a dish to your order
 /nameDish {menuNumber} {dishName}
     - set or change the name of a dish
 /removeDish {menuNumber} {quantityToRemove:all}
     - remove a dish from an OPEN order
 
-Note: the value after ':' will be used when a param has not been specified
+Note: the value after ':' will be used when a command param has not been specified
 ```
 
 ### Usage example
