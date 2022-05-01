@@ -4,7 +4,7 @@ databaseChangeLog:
       author: gventurini
       changes:
         - createTable:
-            tableName: user_dish
+            tableName: user_dish_table
             columns:
               - column:
                   name: user_dish_id
@@ -35,14 +35,14 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: "fk_user_id"
-                    references: "user(user_id)"
+                    foreignKeyName: "fk_user_dish_user_id"
+                    references: "user_table(user_id)"
               - column:
                   name: dish_id
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: "fk_dish_id"
-                    references: "dish(dish_id)"
+                    foreignKeyName: "fk_user_dish_dish_id"
+                    references: "dish_table(dish_id)"
         - createSequence:
             sequenceName: user_dish_sequence

@@ -4,7 +4,7 @@ databaseChangeLog:
       author: gventurini
       changes:
         - createTable:
-            tableName: dish
+            tableName: dish_table
             columns:
               - column:
                   name: dish_id
@@ -38,7 +38,7 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: "fk_order_id"
-                    references: "order(order_id)"
+                    foreignKeyName: "fk_dish_order_id"
+                    references: "order_table(order_id)"
         - createSequence:
             sequenceName: dish_sequence

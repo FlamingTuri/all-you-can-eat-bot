@@ -7,4 +7,7 @@ object OrderMessages {
     fun orderCreationSuccessful(orderName: String) = "Successfully created order '$orderName'"
 
     fun orderNotFoundError(orderName: String) = "Error: order '$orderName' not found for the current chat"
+
+    fun operationNotAllowedForClosedOrderError(orderName: String) =
+        "Error: you cannot perform this operation when order '$orderName' is closed"
 }

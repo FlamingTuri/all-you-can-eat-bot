@@ -4,7 +4,7 @@ databaseChangeLog:
       author: gventurini
       changes:
         - createTable:
-            tableName: user
+            tableName: user_table
             columns:
               - column:
                   name: user_id
@@ -35,7 +35,7 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
-                    foreignKeyName: "fk_order_id"
-                    references: "order(order_id)"
+                    foreignKeyName: "fk_user_order_id"
+                    references: "order_table(order_id)"
         - createSequence:
             sequenceName: user_sequence

@@ -4,7 +4,7 @@ databaseChangeLog:
       author: gventurini
       changes:
         - createTable:
-            tableName: order
+            tableName: order_table
             columns:
               - column:
                   name: order_id
@@ -18,7 +18,7 @@ databaseChangeLog:
       author: gventurini
       changes:
         - addColumn:
-            tableName: order
+            tableName: order_table
             columns:
               - column:
                   name: active
@@ -58,5 +58,5 @@ databaseChangeLog:
       author: gventurini
       changes:
         - addUniqueConstraint:
-            tableName: order
+            tableName: order_table
             columnNames: name, chat_id

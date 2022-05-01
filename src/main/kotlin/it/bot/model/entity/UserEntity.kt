@@ -11,9 +11,10 @@ import javax.persistence.ManyToOne
 import javax.persistence.SequenceGenerator
 import javax.persistence.Table
 
-private const val TABLE = "user"
-private const val SEQUENCE = "${TABLE}_sequence"
-private const val GENERATOR = "${TABLE}_generator"
+private const val BASE = "user"
+private const val TABLE = "${BASE}_table"
+private const val SEQUENCE = "${BASE}_sequence"
+private const val GENERATOR = "${BASE}_generator"
 
 @Entity
 @Table(name = TABLE)
