@@ -16,12 +16,20 @@ class HelpMessageService : CommandParserService() {
     var supportedCommands: List<BotCommand> = listOf()
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
-        val commandsToString = supportedCommands.joinToString("\n") {
-            "${it.command} ${it.format}\n    - ${it.description}"
+        val commandsToString = supportedCommands.groupBy {
+            it.commandType
+        }.entries.joinToString("\n") { entry ->
+            val commands = entry.value.joinToString("\n") {
+                "${it.command} ${it.format}\n    - ${it.description}"
+            }
+            "\n<b>${entry.key.description}</b>\n$commands"
         }
-        val messageText = "Commands supported by all you can eat bot:\n$commandsToString" +
-                "\n\nNote: the value after ':' will be used when a param has not been specified"
 
-        return MessageUtils.createMessage(update, messageText)
+        val messageText = "Commands supported by all you can eat bot:\n$commandsToString" +
+                "\n\nNote: the value after ':' will be used when a command param has not been specified"
+
+        return MessageUtils.createMessage(update, messageText).apply {
+            enableHtml(true)
+        }
     }
 }
