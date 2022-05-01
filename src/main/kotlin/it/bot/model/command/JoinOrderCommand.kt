@@ -11,4 +11,6 @@ class JoinOrderCommand : BotCommand {
     override val format: String = "{orderName}"
 
     override val description: String = "join an existing OPEN order"
+
+    override val commandType: CommandType = CommandType.Group
 }

@@ -9,4 +9,6 @@ class HelpMessageCommand : BotCommand {
     override val format: String = ""
 
     override val description: String = "display this help message"
+
+    override val commandType: CommandType = CommandType.Info
 }

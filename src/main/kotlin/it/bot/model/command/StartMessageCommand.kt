@@ -9,4 +9,6 @@ class StartMessageCommand : BotCommand {
     override val format: String = ""
 
     override val description: String = "display the welcome message"
+
+    override val commandType: CommandType = CommandType.Info
 }

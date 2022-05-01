@@ -11,4 +11,6 @@ class AddDishCommand : BotCommand {
     override val format: String = "{menuNumber} {quantity:1} {dishName:}"
 
     override val description: String = "add a dish to your order"
+
+    override val commandType: CommandType = CommandType.Anywhere
 }

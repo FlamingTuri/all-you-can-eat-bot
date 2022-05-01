@@ -9,4 +9,6 @@ interface BotCommand {
     val format: String
 
     val description: String
+
+    val commandType: CommandType
 }

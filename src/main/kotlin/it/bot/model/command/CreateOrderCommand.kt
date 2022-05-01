@@ -11,4 +11,6 @@ class CreateOrderCommand : BotCommand {
     override val format: String = "{orderName}"
 
     override val description: String = "create a new order"
+
+    override val commandType: CommandType = CommandType.Group
 }
