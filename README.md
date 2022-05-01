@@ -90,3 +90,7 @@ Run tests with:
 ```bash
 ./gradlew test
 ```
+
+## License
+
+[GPL-3.0](LICENSE)
