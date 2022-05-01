@@ -38,6 +38,8 @@ class BotService(
     )
 
     init {
+        helpMessageService.supportedCommands = commandParserServices.map { it.botCommand }
+
         botsApi.registerBot(AllYouCanEatBot(botUsername, botToken, commandParserServices))
     }
 }
