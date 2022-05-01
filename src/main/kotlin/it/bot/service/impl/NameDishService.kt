@@ -34,7 +34,7 @@ class NameDishService(
         } else {
             dishRepository.updateDishName(menuNumber, dishName, user.orderId!!)
 
-            MessageUtils.createMessage(update, "Successfully named dish $menuNumber to $dishName")
+            MessageUtils.createMessage(update, "Successfully named dish $menuNumber to '$dishName'")
         }
     }
 

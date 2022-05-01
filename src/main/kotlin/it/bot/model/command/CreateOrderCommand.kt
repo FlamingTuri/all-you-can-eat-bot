@@ -1,10 +1,12 @@
 package it.bot.model.command
 
+import it.bot.util.Regexes
+
 class CreateOrderCommand : BotCommand {
 
     override val command: String = "/createOrder"
 
-    override val pattern: String = "(\\s+)(\\w+)(\\s*)"
+    override val pattern: String = "(\\s+)${Regexes.namePattern}(\\s*)"
 
     override val format: String = "{orderName}"
 
