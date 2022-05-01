@@ -1,5 +1,6 @@
 package it.bot.service.impl
 
+import it.bot.model.command.LeaveOrderCommand
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
@@ -23,11 +24,7 @@ class LeaveOrderService(
     @Inject private val userDishRepository: UserDishRepository
 ) : CommandParserService() {
 
-    override val command = "/leaveOrder"
-
-    override val commandPattern = "(\\s*)(\\w+)(\\s*)"
-
-    override val commandFormat: String = "{orderName}"
+    override val botCommand = LeaveOrderCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {

@@ -1,5 +1,6 @@
 package it.bot.service.impl
 
+import it.bot.model.command.NameDishCommand
 import it.bot.repository.DishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
@@ -17,11 +18,7 @@ class NameDishService(
     @Inject private val dishRepository: DishRepository
 ) : CommandParserService() {
 
-    override val command: String = "/nameDish"
-
-    override val commandPattern: String = "(\\s*)(\\d+)(\\s+)(\\w+)(\\s*)"
-
-    override val commandFormat: String = "{menuNumber} {dishName}"
+    override val botCommand = NameDishCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {

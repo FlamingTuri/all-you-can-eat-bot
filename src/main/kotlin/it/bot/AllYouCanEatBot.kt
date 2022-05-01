@@ -30,7 +30,7 @@ class AllYouCanEatBot(
 
     private fun handleCommand(update: Update) {
         commandParserServices.find {
-            matches(it.command, MessageUtils.getChatMessage(update))
+            matches(it.botCommand.command, MessageUtils.getChatMessage(update))
         }.let {
             parseUpdate(it, update)
         }.also {

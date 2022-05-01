@@ -1,6 +1,7 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
+import it.bot.model.command.AddDishCommand
 import it.bot.model.entity.DishEntity
 import it.bot.model.entity.UserDishEntity
 import it.bot.model.entity.UserEntity
@@ -26,11 +27,7 @@ class AddDishService(
     @Inject private val userDishRepository: UserDishRepository
 ) : CommandParserService() {
 
-    override val command: String = "/addDish"
-
-    override val commandPattern: String = "(\\s*)(\\d+)((\\s+)(\\d+))?((\\s+)(\\w+))?(\\s*)"
-
-    override val commandFormat: String = "{menuNumber} {quantity:1} {dishName:}"
+    override val botCommand = AddDishCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {

@@ -1,6 +1,7 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
+import it.bot.model.command.CloseOrderCommand
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
@@ -21,11 +22,7 @@ class CloseOrderService(
     @Inject private val showOrderService: ShowOrderService
 ) : CommandParserService() {
 
-    override val command: String = "/closeOrder"
-
-    override val commandPattern: String = "(\\s*)(\\w+)(\\s*)"
-
-    override val commandFormat: String = "{orderName}"
+    override val botCommand = CloseOrderCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {

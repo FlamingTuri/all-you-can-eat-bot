@@ -1,6 +1,7 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
+import it.bot.model.command.RemoveDishCommand
 import it.bot.model.entity.UserDishEntity
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
@@ -25,11 +26,7 @@ class RemoveDishService(
     @Inject private val userDishRepository: UserDishRepository
 ) : CommandParserService() {
 
-    override val command: String = "/removeDish"
-
-    override val commandPattern: String = "(\\s*)(\\d+)((\\s+)(\\d+))?\\s*"
-
-    override val commandFormat: String = "{menuNumber} {quantityToRemove:all}"
+    override val botCommand = RemoveDishCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {

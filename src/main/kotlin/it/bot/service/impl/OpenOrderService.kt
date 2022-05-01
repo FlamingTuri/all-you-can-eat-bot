@@ -1,6 +1,7 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
+import it.bot.model.command.OpenOrderCommand
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
@@ -22,11 +23,7 @@ class OpenOrderService(
     @Inject private val orderRepository: OrderRepository
 ) : CommandParserService() {
 
-    override val command: String = "/openOrder"
-
-    override val commandPattern: String = "(\\s*)(\\w+)(\\s*)"
-
-    override val commandFormat: String = "{orderName}"
+    override val botCommand = OpenOrderCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {

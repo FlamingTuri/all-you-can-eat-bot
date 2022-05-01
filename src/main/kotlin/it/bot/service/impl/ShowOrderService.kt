@@ -1,5 +1,6 @@
 package it.bot.service.impl
 
+import it.bot.model.command.ShowOrderCommand
 import it.bot.model.dto.DishDto
 import it.bot.model.entity.OrderEntity
 import it.bot.repository.DishJpaRepository
@@ -19,11 +20,7 @@ class ShowOrderService(
     @Inject private val dishJpaRepository: DishJpaRepository,
 ) : CommandParserService() {
 
-    override val command: String = "/showOrder"
-
-    override val commandPattern: String = "(\\s*)(\\w+)(\\s*)"
-
-    override val commandFormat: String = "{orderName}"
+    override val botCommand = ShowOrderCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {

@@ -1,6 +1,7 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
+import it.bot.model.command.CreateOrderCommand
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.model.messages.OrderMessages
@@ -16,11 +17,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @ApplicationScoped
 class CreateOrderService(@Inject private val orderRepository: OrderRepository) : CommandParserService() {
 
-    override val command: String = "/createOrder"
-
-    override val commandPattern: String = "(\\s*)(\\w+)(\\s*)"
-
-    override val commandFormat: String = "{orderName}"
+    override val botCommand = CreateOrderCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {

@@ -1,5 +1,6 @@
 package it.bot.service.impl
 
+import it.bot.model.command.JoinOrderCommand
 import it.bot.model.entity.OrderEntity
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
@@ -23,11 +24,7 @@ class JoinOrderService(
     @Inject private val userRepository: UserRepository,
 ) : CommandParserService() {
 
-    override val command = "/joinOrder"
-
-    override val commandPattern = "(\\s*)(\\w+)(\\s*)"
-
-    override val commandFormat: String = "{orderName}"
+    override val botCommand = JoinOrderCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {

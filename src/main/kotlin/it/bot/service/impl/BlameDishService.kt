@@ -3,6 +3,7 @@ package it.bot.service.impl
 import io.quarkus.logging.Log
 import io.quarkus.runtime.Startup
 import it.bot.client.rest.TelegramRestClient
+import it.bot.model.command.BlameDishCommand
 import it.bot.model.dto.TelegramUserDto
 import it.bot.model.entity.UserDishEntity
 import it.bot.repository.UserDishRepository
@@ -28,11 +29,7 @@ class BlameDishService(
     @field: RestClient // https://github.com/quarkusio/quarkus/issues/5413
     private lateinit var telegramRestClient: TelegramRestClient
 
-    override val command: String = "/blame"
-
-    override val commandPattern: String = "(\\s*)(\\d+)((\\s+)(\\w+))?(\\s*)"
-
-    override val commandFormat: String = "{menuNumber} {orderName:}"
+    override val botCommand = BlameDishCommand()
 
     @Transactional
     override fun parseUpdate(update: Update): SendMessage? {
