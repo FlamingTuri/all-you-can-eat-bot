@@ -1,6 +1,8 @@
 package it.bot.unit.service
 
 import io.quarkus.test.junit.QuarkusTest
+import it.bot.model.entity.OrderEntity
+import it.bot.model.enum.OrderStatus
 import it.bot.model.messages.OrderMessages
 import it.bot.repository.OrderRepository
 import it.bot.repository.UserRepository
@@ -46,5 +48,24 @@ class JoinOrderServiceTest {
 
         val message = joinOrderService.parseUpdate(update)
         assertEquals(OrderMessages.orderNotFoundError(orderName), message!!.text)
+    }
+
+    @Test
+    fun testJoinClosedOrder() {
+        Mockito.`when`(orderRepository.findOpenOrderWithNameForChat(Mockito.eq(1L), Mockito.anyString()))
+            .thenReturn(OrderEntity().apply { status = OrderStatus.Close })
+
+        val orderName = "targetOrderName"
+        val update = Update().apply {
+            message = Message().apply {
+                text = "/joinOrder $orderName"
+                chat = Chat().apply {
+                    id = 1
+                }
+            }
+        }
+
+        val message = joinOrderService.parseUpdate(update)
+        assertEquals(OrderMessages.operationNotAllowedForClosedOrderError(orderName), message!!.text)
     }
 }

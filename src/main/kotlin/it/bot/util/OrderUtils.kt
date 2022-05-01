@@ -18,8 +18,7 @@ object OrderUtils {
     fun getOperationNotAllowedWhenOrderIsClosedMessage(update: Update, orderName: String): SendMessage {
         Log.error("order $orderName is closed for chatId ${MessageUtils.getChatId(update)}")
         return MessageUtils.createMessage(
-            update,
-            "Error: you cannot perform this operation when order '$orderName' is closed"
+            update, OrderMessages.operationNotAllowedForClosedOrderError(orderName)
         )
     }
 
