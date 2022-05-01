@@ -20,7 +20,7 @@ class StartMessageService : CommandParserService() {
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val messageText = """
-            This bot help you manage orders for restaurants that use all you can eat formula.
+            This bot helps you manage orders for restaurants that use all you can eat formula.
 
             **Usage example:**
             # create a new order called 'my-order' for the current chat
