@@ -34,6 +34,7 @@ dependencies {
     implementation("io.quarkus:quarkus-rest-client")
     implementation("io.quarkus:quarkus-rest-client-jackson")
     implementation("io.quarkus:quarkus-scheduler")
+    implementation("io.quarkus:quarkus-qute")
 
     testImplementation(kotlin("test"))
     testImplementation("io.quarkus:quarkus-junit5")
