@@ -108,11 +108,11 @@ class BlameDishService(
             }?.let {
                 TelegramUserDto(
                     "${it["id"]}".toLong(),
-                    it["is_bot"] as Boolean,
-                    it["first_name"] as String,
-                    it["last_name"] as String,
+                    it.getOrDefault("is_bot", false) as Boolean,
+                    it.getOrDefault("first_name", "unknown") as String,
+                    it.getOrDefault("last_name", "unknown") as String,
                     it["username"] as String,
-                    it["language_code"] as String
+                    it.getOrDefault("language_code", "en") as String
                 )
             }
         } catch (exception: Exception) {
