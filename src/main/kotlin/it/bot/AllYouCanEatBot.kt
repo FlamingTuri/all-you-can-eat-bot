@@ -53,7 +53,10 @@ class AllYouCanEatBot(
     }
 
     private fun matches(botCommand: String, text: String): Boolean {
-        return text.startsWith("$botCommand ") or (text == botCommand)
+        return text.startsWith("$botCommand ", true) or
+                (text.equals(botCommand, true)) or
+                text.startsWith("$botCommand@$botUsername ", true) or
+                (text.equals("$botCommand@$botUsername", true))
     }
 
     private fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
