@@ -14,15 +14,14 @@ object MessageUtils {
         )
     }
 
-    fun createMessage(update: Update, messageText: String, markdown: Boolean = false): SendMessage {
-        return createMessage(getChatId(update), messageText, markdown)
+    fun createMessage(update: Update, messageText: String): SendMessage {
+        return createMessage(getChatId(update), messageText)
     }
 
-    fun createMessage(chatId: Long, messageText: String, markdown: Boolean = false): SendMessage {
+    fun createMessage(chatId: Long, messageText: String): SendMessage {
         return SendMessage().apply {
             this.chatId = chatId.toString()
             text = messageText
-            enableMarkdown(markdown)
         }
     }
 
