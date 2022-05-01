@@ -3,6 +3,7 @@ package it.bot.service.impl
 import it.bot.model.entity.OrderEntity
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
+import it.bot.model.messages.OrderMessages
 import it.bot.repository.OrderRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
@@ -62,11 +63,7 @@ class JoinOrderService(
         return users.firstOrNull {
             OrderUtils.isClosedAndElapsed(it.order!!, botReopenOrderTimeout)
         }?.let {
-            MessageUtils.createMessage(
-                update,
-                "Error: you cannot join another order since " +
-                        "the order '${it.order?.name}' can still be reopened"
-            )
+            MessageUtils.createMessage(update, OrderMessages.orderCanBeReopenedError(it.order?.name!!))
         } ?: users.firstOrNull {
             it.order?.status == OrderStatus.Open
         }?.let {

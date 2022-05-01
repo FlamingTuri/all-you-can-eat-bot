@@ -10,4 +10,7 @@ object OrderMessages {
 
     fun operationNotAllowedForClosedOrderError(orderName: String) =
         "Error: you cannot perform this operation when order '$orderName' is closed"
+
+    fun orderCanBeReopenedError(orderName: String) =
+        "Error: you cannot join another order since the order '$orderName' can still be reopened"
 }
