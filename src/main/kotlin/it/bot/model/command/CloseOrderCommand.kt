@@ -8,5 +8,5 @@ class CloseOrderCommand : BotCommand {
 
     override val format: String = "{orderName}"
 
-    override val description: String = ""
+    override val description: String = "close an order, preventing further modifications"
 }

@@ -8,5 +8,5 @@ class RemoveDishCommand : BotCommand {
 
     override val format: String = "{menuNumber} {quantityToRemove:all}"
 
-    override val description: String = ""
+    override val description: String = "remove a dish from an OPEN order"
 }

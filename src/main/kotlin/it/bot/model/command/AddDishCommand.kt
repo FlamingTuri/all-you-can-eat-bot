@@ -8,5 +8,5 @@ class AddDishCommand : BotCommand {
 
     override val format: String = "{menuNumber} {quantity:1} {dishName:}"
 
-    override val description: String = ""
+    override val description: String = "add a dish to your order"
 }

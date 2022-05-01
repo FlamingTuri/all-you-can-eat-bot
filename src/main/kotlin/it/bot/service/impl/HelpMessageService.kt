@@ -19,7 +19,8 @@ class HelpMessageService : CommandParserService() {
         val commandsToString = supportedCommands.joinToString("\n") {
             "${it.command} ${it.format}\n    - ${it.description}"
         }
-        val messageText = "Command supported by all you can eat bot:\n$commandsToString"
+        val messageText = "Commands supported by all you can eat bot:\n$commandsToString" +
+                "\n\nNote: the value after ':' will be used when a param has not been specified"
 
         return MessageUtils.createMessage(update, messageText)
     }

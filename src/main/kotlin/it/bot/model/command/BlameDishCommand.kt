@@ -8,5 +8,5 @@ class BlameDishCommand : BotCommand {
 
     override val format: String = "{menuNumber} {orderName:}"
 
-    override val description: String = ""
+    override val description: String = "search who ordered a dish"
 }

@@ -8,5 +8,5 @@ class CreateOrderCommand : BotCommand {
 
     override val format: String = "{orderName}"
 
-    override val description: String = ""
+    override val description: String = "create a new order"
 }

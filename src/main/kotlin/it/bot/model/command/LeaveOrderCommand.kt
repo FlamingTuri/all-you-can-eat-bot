@@ -8,5 +8,5 @@ class LeaveOrderCommand : BotCommand {
 
     override val format: String = "{orderName}"
 
-    override val description: String = ""
+    override val description: String = "leaves an OPEN order"
 }

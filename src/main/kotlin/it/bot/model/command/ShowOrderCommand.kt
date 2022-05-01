@@ -8,5 +8,5 @@ class ShowOrderCommand : BotCommand {
 
     override val format: String = "{orderName}"
 
-    override val description: String = ""
+    override val description: String = "display a recap of an order"
 }
