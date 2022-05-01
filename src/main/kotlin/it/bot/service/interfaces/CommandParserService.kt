@@ -10,7 +10,7 @@ abstract class CommandParserService {
     abstract val botCommand: BotCommand
 
     open fun parseUpdate(update: Update): SendMessage? {
-        val regex = "${botCommand.command}${botCommand.pattern}".toRegex()
+        val regex = "(?i)${botCommand.command}(?-i)${botCommand.pattern}".toRegex()
         return when (val matchResult = regex.matchEntire(update.message.text)) {
             null -> MessageUtils.getInvalidCommandMessage(update, botCommand.command, botCommand.format)
             else -> executeOperation(update, matchResult)
