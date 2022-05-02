@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi8/openjdk-11:1.12-1
+FROM openjdk:11
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
 
@@ -11,8 +11,9 @@ COPY --chown=185 build/quarkus-app/quarkus/ /deployments/quarkus/
 
 USER 185
 
-CMD [ "./gradlew", \
-  "quarkusDev", \
+CMD ["java", \
+  "-jar", \
+  "/deployments/quarkus-run.jar", \
   "-Dquarkus.http.host=0.0.0.0", \
   "-Dquarkus.http.port=${PORT}", \
   "-Dquarkus.datasource.username=${POSTGRESQL_USERNAME}", \
@@ -21,6 +22,6 @@ CMD [ "./gradlew", \
   "-Dbot.repo.url=${BOT_REPO_URL}", \
   "-Dbot.donate.url=${BOT_DONATE_URL}", \
   "-Dquarkus.scheduler.enabled=true", \
-  "-Dcron.expr='0 */1 * * * ?'", \
-  "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
+  "-Dcron.expr='0 0 */12 * * ?'", \
+  "-Djava.util.logging.manager=org.jboss.logmanager.LogManager" \
 ]
