@@ -9,15 +9,18 @@ COPY --chown=185 build/quarkus-app/*.jar /deployments/
 COPY --chown=185 build/quarkus-app/app/ /deployments/app/
 COPY --chown=185 build/quarkus-app/quarkus/ /deployments/quarkus/
 
-EXPOSE 8080
 USER 185
-#ENV AB_JOLOKIA_OFF=""
-#ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Dquarkus.http.port=${PORT} -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-#ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
 
-CMD [
-  "/deployments/quarkus-run.jar",
-  "-Dquarkus.http.host=0.0.0.0",
-  "-Dquarkus.http.port=${PORT}",
-  "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+CMD [ "./gradlew", \
+  "quarkusDev", \
+  "-Dquarkus.http.host=0.0.0.0", \
+  "-Dquarkus.http.port=${PORT}", \
+  "-Dquarkus.datasource.username=${POSTGRESQL_USERNAME}", \
+  "-Dquarkus.datasource.password=${POSTGRESQL_PASSWORD}", \
+  "-Dbot.token=${BOT_TOKEN}", \
+  "-Dbot.repo.url=${BOT_REPO_URL}", \
+  "-Dbot.donate.url=${BOT_DONATE_URL}", \
+  "-Dquarkus.scheduler.enabled=true", \
+  "-Dcron.expr='0 */1 * * * ?'", \
+  "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
 ]
