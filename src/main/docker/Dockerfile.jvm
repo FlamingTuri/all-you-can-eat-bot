@@ -12,10 +12,9 @@ COPY --chown=185 build/quarkus-app/quarkus/ /deployments/quarkus/
 USER 185
 
 CMD ["java", \
-  "-jar", \
-  "/deployments/quarkus-run.jar", \
   "-Dquarkus.http.host=0.0.0.0", \
   "-Dquarkus.http.port=${PORT}", \
+  "-Dquarkus.datasource.jdbc.url=${POSTGRESQL_URL}", \
   "-Dquarkus.datasource.username=${POSTGRESQL_USERNAME}", \
   "-Dquarkus.datasource.password=${POSTGRESQL_PASSWORD}", \
   "-Dbot.token=${BOT_TOKEN}", \
@@ -23,5 +22,7 @@ CMD ["java", \
   "-Dbot.donate.url=${BOT_DONATE_URL}", \
   "-Dquarkus.scheduler.enabled=true", \
   "-Dcron.expr='0 0 */12 * * ?'", \
-  "-Djava.util.logging.manager=org.jboss.logmanager.LogManager" \
+  "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
+  "-jar", \
+  "/deployments/quarkus-run.jar" \
 ]
