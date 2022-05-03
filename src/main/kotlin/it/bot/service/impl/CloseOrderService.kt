@@ -8,12 +8,11 @@ import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import it.bot.util.OrderUtils
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.transaction.Transactional
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
+import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 
 @ApplicationScoped
 class CloseOrderService(
@@ -23,11 +22,6 @@ class CloseOrderService(
 ) : CommandParserService() {
 
     override val botCommand = CloseOrderCommand()
-
-    @Transactional
-    override fun parseUpdate(update: Update): SendMessage? {
-        return super.parseUpdate(update)
-    }
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
         val (_, orderName, _) = matchResult.destructured

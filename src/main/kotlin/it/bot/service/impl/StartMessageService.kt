@@ -5,11 +5,10 @@ import io.quarkus.qute.Template
 import it.bot.model.command.StartMessageCommand
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
-import javax.enterprise.context.ApplicationScoped
-import javax.transaction.Transactional
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
+import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class StartMessageService(
@@ -19,11 +18,6 @@ class StartMessageService(
 ) : CommandParserService() {
 
     override val botCommand = StartMessageCommand()
-
-    @Transactional
-    override fun parseUpdate(update: Update): SendMessage? {
-        return super.parseUpdate(update)
-    }
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val messageText = welcomeTemplate

@@ -16,7 +16,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
-import javax.transaction.Transactional
 
 @Startup
 @ApplicationScoped
@@ -27,11 +26,6 @@ class BlameDishService(
 ) : CommandParserService() {
 
     override val botCommand = BlameDishCommand()
-
-    @Transactional
-    override fun parseUpdate(update: Update): SendMessage? {
-        return super.parseUpdate(update)
-    }
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val (dishMenuNumber, orderName) = destructure(matchResult)
