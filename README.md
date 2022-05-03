@@ -97,6 +97,22 @@ Run tests with:
 ./gradlew test
 ```
 
+## Deploy
+
+```bash
+IMAGE_NAME="quarkus/$APP_NAME"
+
+docker build -f src/main/docker/Dockerfile.jvm -t "$IMAGE_NAME" .
+
+docker run --rm \
+  -e PORT=8080 \
+  -e BOT_TOKEN="$1" \
+  -p 8080:8080 \
+  -d "$APP_NAME"
+```
+
+Running `heroku login` and then `./script/heroku-deploy.sh <your-token>` will deploy the bot to heroku. 
+
 ## License
 
 [GPL-3.0](LICENSE)
