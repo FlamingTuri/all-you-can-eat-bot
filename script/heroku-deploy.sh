@@ -14,7 +14,7 @@ docker build -f src/main/docker/Dockerfile.jvm -t "$IMAGE_NAME" .
 
 docker run --rm \
   -e PORT=8080 \
-  -e BOT_TOKEN=5351182147:AAH8unRgzOKldSMVAAA6XUNqMWthR93nj4s \
+  -e BOT_TOKEN="$1" \
   -p 8080:8080 \
   -d "$APP_NAME"
 
