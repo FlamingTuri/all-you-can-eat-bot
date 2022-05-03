@@ -1,19 +1,20 @@
 package it.bot.service.impl
 
-import io.quarkus.arc.properties.UnlessBuildProperty
+import io.quarkus.arc.profile.UnlessBuildProfile
 import io.quarkus.runtime.Startup
 import it.bot.AllYouCanEatBot
 import it.bot.service.interfaces.CommandParserService
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
+import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 
 
-@UnlessBuildProperty(name = "quarkus.profile", stringValue = "test")
+@Suppress("unused")
 @Startup
 @ApplicationScoped
+@UnlessBuildProfile("test")
 class BotService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.token") private val botToken: String,
