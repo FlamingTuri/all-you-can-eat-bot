@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#heroku login
+
+./gradlew clean build
+
+heroku container:login
+
+APP_NAME=$(heroku info | grep  "=== .*" |sed "s/=== //")
+
+IMAGE_NAME="quarkus/$APP_NAME"
+
+docker build -f src/main/docker/Dockerfile.jvm -t "$IMAGE_NAME" .
+
+docker run --rm \
+  -e PORT=8080 \
+  -e BOT_TOKEN=5351182147:AAH8unRgzOKldSMVAAA6XUNqMWthR93nj4s \
+  -p 8080:8080 \
+  -d "$APP_NAME"
+
+REGISTRY_NAME=registry.heroku.com/"$APP_NAME"/web
+
+docker tag "$IMAGE_NAME" "$REGISTRY_NAME"
+docker push "$REGISTRY_NAME"
+
+heroku container:release web -a "$APP_NAME"
