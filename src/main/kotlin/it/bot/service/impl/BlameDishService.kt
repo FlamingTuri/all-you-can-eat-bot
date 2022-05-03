@@ -10,24 +10,21 @@ import it.bot.repository.UserDishRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.FormatUtils
 import it.bot.util.MessageUtils
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.transaction.Transactional
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
+import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
+import javax.transaction.Transactional
 
 @Startup
 @ApplicationScoped
 class BlameDishService(
     @ConfigProperty(name = "bot.token") private val botToken: String,
-    @Inject private val userDishRepository: UserDishRepository
+    @Inject private val userDishRepository: UserDishRepository,
+    @Inject @RestClient private val telegramRestClient: TelegramRestClient
 ) : CommandParserService() {
-
-    @Inject
-    @field: RestClient // https://github.com/quarkusio/quarkus/issues/5413
-    private lateinit var telegramRestClient: TelegramRestClient
 
     override val botCommand = BlameDishCommand()
 
