@@ -1,11 +1,16 @@
 package it.bot.service.impl
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.quarkus.arc.profile.UnlessBuildProfile
+import io.quarkus.logging.Log
 import io.quarkus.runtime.Startup
 import it.bot.AllYouCanEatBot
+import it.bot.client.rest.TelegramRestClient
 import it.bot.service.interfaces.CommandParserService
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.telegram.telegrambots.meta.TelegramBotsApi
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -30,6 +35,7 @@ class BotService(
     @Inject private val addDishService: AddDishService,
     @Inject private val nameDishService: NameDishService,
     @Inject private val removeDishService: RemoveDishService,
+    @Inject @RestClient private val telegramRestClient: TelegramRestClient
 ) {
 
     private val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
@@ -45,6 +51,31 @@ class BotService(
     init {
         helpMessageService.supportedCommands = commandParserServices.map { it.botCommand }
 
+        setBotCommands()
+
         botsApi.registerBot(AllYouCanEatBot(botUsername, botToken, commandParserServices))
+    }
+
+    private fun setBotCommands() {
+        val objectMapper = ObjectMapper()
+
+        val botCommands = commandParserServices.map {
+            BotCommand().apply {
+                command = it.botCommand.command.lowercase()
+                description = it.botCommand.description
+            }
+        }
+        val botCommandsToString = objectMapper.writeValueAsString(botCommands)
+
+        if (Log.isDebugEnabled()) {
+            Log.debug("bot commands: $botCommandsToString")
+        }
+
+        try {
+            val success = telegramRestClient.setBotCommands(botToken, botCommandsToString)
+            Log.info("bot commands updated: $success")
+        } catch (exception: Exception) {
+            Log.error("failed to set bot commands: ", exception)
+        }
     }
 }
