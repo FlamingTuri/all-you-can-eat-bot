@@ -25,12 +25,14 @@ class MyOrdersService(
     override val botCommand: BotCommand = MyOrdersCommand()
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
+        val orderName = destructure(matchResult)
+
         val telegramUserId = MessageUtils.getTelegramUserId(update)
         val sort = Sort.by("status")
-        val orders = orderRepository.findOrderForUser(telegramUserId, null, sort)
+        val orders = orderRepository.findOrderForUser(telegramUserId, orderName, sort)
 
         val messageText = when {
-            orders.isEmpty() -> getNoOrderToDisplayMessage(update)
+            orders.isEmpty() -> getNoOrderToDisplayMessage(update, orderName)
             else -> formatUserOrders(update, orders)
         }
 
@@ -39,9 +41,17 @@ class MyOrdersService(
         }
     }
 
-    private fun getNoOrderToDisplayMessage(update: Update): String {
-        Log.info("User ${MessageUtils.getTelegramUserId(update)} does not have any order")
-        return "You do not have any order to display"
+    private fun destructure(matchResult: MatchResult): String? {
+        val (_, orderName, _) = matchResult.destructured
+        return if (orderName == "") null else orderName
+    }
+
+    private fun getNoOrderToDisplayMessage(update: Update, orderName: String?): String {
+        Log.info("User ${MessageUtils.getTelegramUserId(update)} does not have any order, orderName '$orderName'")
+        return when (orderName) {
+            null -> "You do not have any order to display"
+            else -> "You have not joined order '$orderName'"
+        }
     }
 
     private fun formatUserOrders(update: Update, orders: List<OrderEntity>): String {
