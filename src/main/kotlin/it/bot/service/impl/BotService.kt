@@ -36,6 +36,7 @@ class BotService(
     @Inject private val addDishService: AddDishService,
     @Inject private val nameDishService: NameDishService,
     @Inject private val removeDishService: RemoveDishService,
+    @Inject private val myOrdersService: MyOrdersService,
     @Inject @RestClient private val telegramRestClient: TelegramRestClient
 ) {
 
@@ -46,7 +47,7 @@ class BotService(
         chatOrdersService, createOrderService, joinOrderService, leaveOrderService,
         closeOrderService, openOrderService, showOrderService, blameDishService,
 
-        addDishService, nameDishService, removeDishService
+        addDishService, nameDishService, removeDishService, myOrdersService
     )
 
     init {

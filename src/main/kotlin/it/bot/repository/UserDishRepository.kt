@@ -1,6 +1,7 @@
 package it.bot.repository
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepository
+import io.quarkus.panache.common.Sort
 import it.bot.model.entity.DishEntity
 import it.bot.model.entity.UserDishEntity
 import it.bot.model.entity.UserEntity
@@ -77,5 +78,17 @@ class UserDishRepository : PanacheRepository<UserDishEntity> {
             )
         """
         delete(query, orderId)
+    }
+
+    fun findUserDishes(telegramUserId: Long, orderIds: List<Long?>, sort: Sort): List<UserDishEntity> {
+        val query = """
+            select ud
+            from UserDishEntity ud
+            join UserEntity u on u.userId = ud.userId
+            join DishEntity d on d.dishId = ud.dishId
+            where u.telegramUserId = ?1
+            and d.orderId in (?2)
+        """
+        return find(query, sort, telegramUserId, orderIds).list()
     }
 }

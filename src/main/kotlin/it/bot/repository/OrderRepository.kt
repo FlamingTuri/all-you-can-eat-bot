@@ -1,9 +1,10 @@
 package it.bot.repository
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepository
+import io.quarkus.panache.common.Sort
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
-import java.util.Calendar
+import java.util.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -36,15 +37,15 @@ class OrderRepository : PanacheRepository<OrderEntity> {
         return find(query, chatId, orderName, currentTimeNow).firstResult()
     }
 
-    fun findOrderForUser(telegramUserId: Long, orderName: String): OrderEntity? {
+    fun findOrderForUser(telegramUserId: Long, orderName: String?, sort: Sort): List<OrderEntity> {
         val query = """
-            select *
+            select o
             from OrderEntity o
-            join UserEntity u.orderId = o.orderId
-            where u.telegramId = ?1
-            and o.orderName = ?2
+            join UserEntity u on u.orderId = o.orderId
+            where u.telegramUserId = ?1
+            and (?2 = '' or o.name = ?2)
         """
-        return find(query, telegramUserId, orderName).firstResult()
+        return find(query, sort, telegramUserId, orderName ?: "").list()
     }
 
     fun findOrdersNotUpdatedFor(hours: Int): List<OrderEntity> {
