@@ -17,7 +17,7 @@ class ChatOrdersService(@Inject private val orderRepository: OrderRepository) : 
 
     override val botCommand: BotCommand = ChatOrdersCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
+    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val orders = orderRepository.findOrders(MessageUtils.getChatId(update))
         val messageText = when {
             orders.isEmpty() -> "The current chat does not have any order"
