@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "me.turi"
-version = "1.2.0-SNAPSHOT"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
