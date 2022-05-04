@@ -6,11 +6,10 @@ import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import it.bot.util.UserUtils
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.transaction.Transactional
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
+import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 
 @ApplicationScoped
 class NameDishService(
@@ -19,11 +18,6 @@ class NameDishService(
 ) : CommandParserService() {
 
     override val botCommand = NameDishCommand()
-
-    @Transactional
-    override fun parseUpdate(update: Update): SendMessage? {
-        return super.parseUpdate(update)
-    }
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
         val (menuNumber, dishName) = destructure(matchResult)

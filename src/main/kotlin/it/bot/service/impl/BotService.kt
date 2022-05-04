@@ -25,6 +25,7 @@ class BotService(
     @ConfigProperty(name = "bot.token") private val botToken: String,
     @Inject private val startMessageService: StartMessageService,
     @Inject private val helpMessageService: HelpMessageService,
+    @Inject private val chatOrdersService: ChatOrdersService,
     @Inject private val createOrderService: CreateOrderService,
     @Inject private val joinOrderService: JoinOrderService,
     @Inject private val leaveOrderService: LeaveOrderService,
@@ -42,7 +43,7 @@ class BotService(
     private val commandParserServices: List<CommandParserService> = listOf(
         startMessageService, helpMessageService,
 
-        createOrderService, joinOrderService, leaveOrderService,
+        chatOrdersService, createOrderService, joinOrderService, leaveOrderService,
         closeOrderService, openOrderService, showOrderService, blameDishService,
 
         addDishService, nameDishService, removeDishService
