@@ -7,10 +7,10 @@ import it.bot.repository.DishRepository
 import it.bot.repository.OrderRepository
 import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
-import org.eclipse.microprofile.config.inject.ConfigProperty
 
 
 @UnlessBuildProperty(name = "quarkus.profile", stringValue = "test")
@@ -25,7 +25,7 @@ class CleanupJob(
 ) {
 
     @Transactional
-    @Scheduled(cron = "{cron.expr}")
+    @Scheduled(cron = "{bot.cleanup.job.cron.expr}")
     fun cleanup() {
         Log.info("CleanupJob: started, hours configured for order deletion: $hours")
         val orders = orderRepository.findOrdersNotUpdatedFor(hours)
