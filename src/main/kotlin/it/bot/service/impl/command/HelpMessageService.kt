@@ -1,4 +1,4 @@
-package it.bot.service.impl
+package it.bot.service.impl.command
 
 import it.bot.model.command.BotCommand
 import it.bot.model.command.HelpMessageCommand

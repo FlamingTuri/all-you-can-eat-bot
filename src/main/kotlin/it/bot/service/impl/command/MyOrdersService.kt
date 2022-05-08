@@ -1,4 +1,4 @@
-package it.bot.service.impl
+package it.bot.service.impl.command
 
 import io.quarkus.logging.Log
 import io.quarkus.panache.common.Sort

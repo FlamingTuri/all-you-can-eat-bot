@@ -7,7 +7,7 @@ import it.bot.model.enum.OrderStatus
 import it.bot.model.messages.OrderMessages
 import it.bot.repository.OrderRepository
 import it.bot.repository.UserRepository
-import it.bot.service.impl.JoinOrderService
+import it.bot.service.impl.command.JoinOrderService
 import it.bot.service.impl.UpdateParserService
 import java.util.Calendar
 import kotlin.test.assertEquals

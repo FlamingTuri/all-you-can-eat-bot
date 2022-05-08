@@ -6,6 +6,7 @@ import io.quarkus.logging.Log
 import io.quarkus.runtime.Startup
 import it.bot.AllYouCanEatBot
 import it.bot.client.rest.TelegramRestClient
+import it.bot.service.impl.command.*
 import it.bot.service.interfaces.CommandParserService
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient

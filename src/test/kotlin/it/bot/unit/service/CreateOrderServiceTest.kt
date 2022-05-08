@@ -4,7 +4,7 @@ import io.quarkus.test.junit.QuarkusTest
 import it.bot.model.entity.OrderEntity
 import it.bot.model.messages.OrderMessages
 import it.bot.repository.OrderRepository
-import it.bot.service.impl.CreateOrderService
+import it.bot.service.impl.command.CreateOrderService
 import it.bot.service.impl.UpdateParserService
 import it.bot.unit.util.MockitoUtils
 import kotlin.test.assertEquals

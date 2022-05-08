@@ -1,4 +1,4 @@
-package it.bot.service.impl
+package it.bot.service.impl.command
 
 import io.quarkus.qute.Location
 import io.quarkus.qute.Template
