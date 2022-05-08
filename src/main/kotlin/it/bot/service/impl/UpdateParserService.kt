@@ -92,7 +92,9 @@ class UpdateParserService(
     }
 
     private fun getWaitingResponseMessage(update: Update, botCommand: BotCommand): SendMessage {
-        val messageText = "Waiting for response: ${botCommand.format}"
+        val command = botCommand.command
+        val format = botCommand.format
+        val messageText = "Finalize $command operation by replying with a message with the following format: $format"
         return MessageUtils.createMessage(update, messageText).apply {
             if (update.message.isGroupMessage) {
                 setReplyMarkupForGroups(this, update)
