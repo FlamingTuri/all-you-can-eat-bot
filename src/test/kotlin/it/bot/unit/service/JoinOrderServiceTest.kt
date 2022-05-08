@@ -55,6 +55,9 @@ class JoinOrderServiceTest {
                 chat = Chat().apply {
                     id = 1
                 }
+                from = User().apply {
+                    id = 100
+                }
             }
         }
 
@@ -73,6 +76,9 @@ class JoinOrderServiceTest {
                 text = "/joinOrder $orderName"
                 chat = Chat().apply {
                     id = 1
+                }
+                from = User().apply {
+                    id = 100
                 }
             }
         }

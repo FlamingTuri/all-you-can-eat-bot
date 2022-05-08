@@ -16,6 +16,7 @@ import org.mockito.Mockito
 import org.telegram.telegrambots.meta.api.objects.Chat
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.User
 import kotlin.test.assertEquals
 
 @QuarkusTest
@@ -50,6 +51,9 @@ class CreateOrderServiceTest {
                 chat = Chat().apply {
                     id = 1
                 }
+                from = User().apply {
+                    id = 100
+                }
             }
         }
 
@@ -67,6 +71,9 @@ class CreateOrderServiceTest {
                 text = "/createOrder existingOrderName"
                 chat = Chat().apply {
                     id = 1
+                }
+                from = User().apply {
+                    id = 100
                 }
             }
         }
