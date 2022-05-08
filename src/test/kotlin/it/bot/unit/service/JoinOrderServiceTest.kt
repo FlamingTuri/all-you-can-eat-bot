@@ -8,6 +8,7 @@ import it.bot.model.messages.OrderMessages
 import it.bot.repository.OrderRepository
 import it.bot.repository.UserRepository
 import it.bot.service.impl.JoinOrderService
+import it.bot.service.impl.UpdateParserService
 import java.util.Calendar
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeAll
@@ -25,6 +26,7 @@ class JoinOrderServiceTest {
 
     private val botReopenOrderTimeout = 1
 
+    private val updateParserService = UpdateParserService()
     private val orderRepository = Mockito.mock(OrderRepository::class.java)
     private var userRepository = Mockito.mock(UserRepository::class.java)
     private lateinit var joinOrderService: JoinOrderService
@@ -49,7 +51,7 @@ class JoinOrderServiceTest {
             }
         }
 
-        val message = joinOrderService.parseUpdate(update)
+        val message = updateParserService.parseUpdate(joinOrderService, update)
         assertEquals(OrderMessages.orderNotFoundError(orderName), message!!.text)
     }
 
@@ -68,7 +70,7 @@ class JoinOrderServiceTest {
             }
         }
 
-        val message = joinOrderService.parseUpdate(update)
+        val message = updateParserService.parseUpdate(joinOrderService, update)
         assertEquals(OrderMessages.operationNotAllowedForClosedOrderError(orderName), message!!.text)
     }
 
@@ -104,7 +106,7 @@ class JoinOrderServiceTest {
             }
         }
 
-        val message = joinOrderService.parseUpdate(update)
+        val message = updateParserService.parseUpdate(joinOrderService, update)
         assertEquals(OrderMessages.orderCanBeReopenedError(orderName), message!!.text)
     }
 }

@@ -5,6 +5,7 @@ import it.bot.model.entity.OrderEntity
 import it.bot.model.messages.OrderMessages
 import it.bot.repository.OrderRepository
 import it.bot.service.impl.CreateOrderService
+import it.bot.service.impl.UpdateParserService
 import it.bot.unit.util.MockitoUtils
 import kotlin.test.assertEquals
 import org.junit.jupiter.api.BeforeAll
@@ -19,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CreateOrderServiceTest {
 
+    private val updateParserService = UpdateParserService()
     private val orderRepository = Mockito.mock(OrderRepository::class.java)
     private lateinit var createOrderService: CreateOrderService
 
@@ -44,7 +46,7 @@ class CreateOrderServiceTest {
             }
         }
 
-        val message = createOrderService.parseUpdate(update)
+        val message = updateParserService.parseUpdate(createOrderService, update)
         assertEquals(OrderMessages.orderCreationSuccessful(orderName), message!!.text)
     }
 
@@ -62,7 +64,7 @@ class CreateOrderServiceTest {
             }
         }
 
-        val message = createOrderService.parseUpdate(update)
+        val message = updateParserService.parseUpdate(createOrderService, update)
         assertEquals(OrderMessages.orderWithTheSameNameError, message!!.text)
     }
 }
