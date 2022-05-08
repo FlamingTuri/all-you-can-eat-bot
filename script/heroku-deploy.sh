@@ -12,11 +12,7 @@ IMAGE_NAME="quarkus/$APP_NAME"
 
 docker build -f src/main/docker/Dockerfile.jvm -t "$IMAGE_NAME" .
 
-docker run --rm \
-  -e PORT=8080 \
-  -e BOT_TOKEN="$1" \
-  -p 8080:8080 \
-  -d "$APP_NAME"
+docker run --rm -p 8080:8080 -d "$APP_NAME"
 
 REGISTRY_NAME=registry.heroku.com/"$APP_NAME"/web
 
