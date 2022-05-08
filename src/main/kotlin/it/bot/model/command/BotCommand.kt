@@ -19,7 +19,7 @@ interface BotCommand {
     }
 
     fun isExactMatch(text: String, botUsername: String): Boolean {
-        return (text.equals(command, true)) or
-                (text.equals("$command@$botUsername", true))
+        return text.equals(command, true) or
+                text.equals("$command@$botUsername", true)
     }
 }
