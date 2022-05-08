@@ -9,15 +9,27 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard
 import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 import javax.transaction.Transactional
 
 @ApplicationScoped
 class UpdateParserService(
-    @ConfigProperty(name = "bot.username") private val botUsername: String
+    @ConfigProperty(name = "bot.username") private val botUsername: String,
+    @Inject private val botCommandsService: BotCommandsService
 ) {
 
     @Transactional
-    fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
+    fun handleUpdate(update: Update): SendMessage? {
+        return parseUpdate(getCommandService(update), update)
+    }
+
+    private fun getCommandService(update: Update): CommandParserService? {
+        return botCommandsService.getCommandServices().find {
+            it.botCommand.matches(MessageUtils.getChatMessage(update), botUsername)
+        }
+    }
+
+    private fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
         return if (commandParserService == null) {
             Log.error("no command support for '${MessageUtils.getChatMessage(update)}'")
             null

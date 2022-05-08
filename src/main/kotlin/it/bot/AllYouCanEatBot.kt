@@ -2,7 +2,6 @@ package it.bot
 
 import io.quarkus.logging.Log
 import it.bot.service.impl.UpdateParserService
-import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
@@ -13,8 +12,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 class AllYouCanEatBot(
     private val botUsername: String,
     private val botToken: String,
-    private val updateParserService: UpdateParserService,
-    private val commandParserServices: List<CommandParserService>
+    private val updateParserService: UpdateParserService
 ) : TelegramLongPollingBot() {
 
     override fun onUpdateReceived(update: Update) {
@@ -24,21 +22,15 @@ class AllYouCanEatBot(
 
         if (update.hasMessage() && update.message.hasText()) {
             try {
-                handleCommand(update)
+                handleUpdateAndNotifyResult(update)
             } catch (exception: Exception) {
                 handleUnexpectedError(update, exception)
             }
         }
     }
 
-    private fun handleCommand(update: Update) {
-        commandParserServices.find {
-            it.botCommand.matches(MessageUtils.getChatMessage(update), botUsername)
-        }.let {
-            updateParserService.parseUpdate(it, update)
-        }.also {
-            sendMessage(it)
-        }
+    private fun handleUpdateAndNotifyResult(update: Update) {
+        sendMessage(updateParserService.handleUpdate(update))
     }
 
     private fun handleUnexpectedError(update: Update, exception: Exception) {

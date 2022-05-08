@@ -33,6 +33,6 @@ class BotService(
     init {
         botCommandsService.setBotSupportedCommands()
 
-        botsApi.registerBot(AllYouCanEatBot(botUsername, botToken, updateParserService, botCommandsService.getCommandServices()))
+        botsApi.registerBot(AllYouCanEatBot(botUsername, botToken, updateParserService))
     }
 }
