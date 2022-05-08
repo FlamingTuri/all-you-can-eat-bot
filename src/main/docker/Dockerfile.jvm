@@ -21,7 +21,8 @@ CMD ["java", \
   "-Dbot.repo.url=${BOT_REPO_URL}", \
   "-Dbot.donate.url=${BOT_DONATE_URL}", \
   "-Dquarkus.scheduler.enabled=true", \
-  "-Dcron.expr='0 0 */12 * * ?'", \
+  "-Dbot.cleanup.job.cron.expr=0 0 */12 * * ?", \
+  "-Dall-you-can-eat-bot-rest-client/mp-rest/url=${BOT_REST_URL}", \
   "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
   "-jar", \
   "/deployments/quarkus-run.jar" \
