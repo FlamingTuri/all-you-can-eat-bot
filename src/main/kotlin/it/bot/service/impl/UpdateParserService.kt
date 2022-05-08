@@ -2,6 +2,7 @@ package it.bot.service.impl
 
 import io.quarkus.logging.Log
 import it.bot.model.command.BotCommand
+import it.bot.repository.CommandCacheRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import org.eclipse.microprofile.config.inject.ConfigProperty
@@ -12,24 +13,52 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
 
+
 @ApplicationScoped
 class UpdateParserService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
-    @Inject private val botCommandsService: BotCommandsService
+    @Inject private val botCommandsService: BotCommandsService,
+    @Inject private val commandCacheRepository: CommandCacheRepository
 ) {
 
     @Transactional
     fun handleUpdate(update: Update): SendMessage? {
-        return parseUpdate(getCommandService(update), update)
+        return parseUpdate(getCommandServiceWithCacheFallback(update), update)
+    }
+
+    private fun getCommandServiceWithCacheFallback(update: Update): CommandParserService? {
+        return getCommandService(update) ?: getCommandServiceUsingCache(update)
     }
 
     private fun getCommandService(update: Update): CommandParserService? {
-        return botCommandsService.getCommandServices().find {
-            it.botCommand.matches(MessageUtils.getChatMessage(update), botUsername)
+        val message = MessageUtils.getChatMessage(update)
+        return getCommandServiceForMessage(message)
+    }
+
+    private fun getCommandServiceUsingCache(update: Update): CommandParserService? {
+        val chatId = MessageUtils.getChatId(update)
+        val telegramUserId = MessageUtils.getTelegramUserId(update)
+        val commandCache = commandCacheRepository.findChatUserCommand(chatId, telegramUserId)
+
+        return commandCache?.let {
+            commandCacheRepository.delete(it)
+
+            val originalMessage = MessageUtils.getChatMessage(update)
+            val messageWithCommand = "${it.command} $originalMessage"
+            Log.info("Found pending command from cache, the message will become: $messageWithCommand")
+            getCommandServiceForMessage(messageWithCommand).also {
+                update.message.text = messageWithCommand
+            }
         }
     }
 
-    private fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
+    private fun getCommandServiceForMessage(message: String): CommandParserService? {
+        return botCommandsService.getCommandServices().find {
+            it.botCommand.matches(message, botUsername)
+        }
+    }
+
+    fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
         return if (commandParserService == null) {
             Log.error("no command support for '${MessageUtils.getChatMessage(update)}'")
             null
