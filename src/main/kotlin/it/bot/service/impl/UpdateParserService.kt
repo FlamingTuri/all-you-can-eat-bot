@@ -2,6 +2,7 @@ package it.bot.service.impl
 
 import io.quarkus.logging.Log
 import it.bot.model.command.BotCommand
+import it.bot.model.entity.CommandCacheEntity
 import it.bot.repository.CommandCacheRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
@@ -69,17 +70,36 @@ class UpdateParserService(
             val matchResult = regex.matchEntire(messageText)
             return when {
                 matchResult != null -> commandParserService.executeOperation(update, matchResult)
-                botCommand.isExactMatch(messageText, botUsername) -> getWaitingResponseMessage(update, botCommand)
+                botCommand.isExactMatch(messageText, botUsername) -> addCommandToCache(update, botCommand)
                 else -> MessageUtils.getInvalidCommandMessage(update, botCommand.command, botCommand.format)
             }
         }
     }
 
+    private fun addCommandToCache(update: Update, botCommand: BotCommand): SendMessage {
+        val commandCache = CommandCacheEntity().apply {
+            chatId = MessageUtils.getChatId(update)
+            telegramUserId = MessageUtils.getChatId(update)
+            command = botCommand.command
+        }
+        commandCacheRepository.persist(commandCache)
+
+        return getWaitingResponseMessage(update, botCommand)
+    }
+
     private fun getWaitingResponseMessage(update: Update, botCommand: BotCommand): SendMessage {
         val messageText = "Waiting for response: ${botCommand.format}"
         return MessageUtils.createMessage(update, messageText).apply {
+            if (update.message.isGroupMessage) {
+                setReplyMarkupForGroups(this, update)
+            }
+        }
+    }
+
+    private fun setReplyMarkupForGroups(sendMessage: SendMessage, update: Update) {
+        sendMessage.apply {
+            replyToMessageId = update.message.messageId
             replyMarkup = ForceReplyKeyboard().apply {
-                replyToMessageId = update.message.messageId
                 forceReply = true
                 selective = true
             }
