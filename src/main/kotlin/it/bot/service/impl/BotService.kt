@@ -25,61 +25,14 @@ class BotService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.token") private val botToken: String,
     @Inject private val updateParserService: UpdateParserService,
-    @Inject private val startMessageService: StartMessageService,
-    @Inject private val helpMessageService: HelpMessageService,
-    @Inject private val chatOrdersService: ChatOrdersService,
-    @Inject private val createOrderService: CreateOrderService,
-    @Inject private val joinOrderService: JoinOrderService,
-    @Inject private val leaveOrderService: LeaveOrderService,
-    @Inject private val closeOrderService: CloseOrderService,
-    @Inject private val openOrderService: OpenOrderService,
-    @Inject private val showOrderService: ShowOrderService,
-    @Inject private val blameDishService: BlameDishService,
-    @Inject private val addDishService: AddDishService,
-    @Inject private val nameDishService: NameDishService,
-    @Inject private val removeDishService: RemoveDishService,
-    @Inject private val myOrdersService: MyOrdersService,
-    @Inject @RestClient private val telegramRestClient: TelegramRestClient
+    @Inject private val botCommandsService: BotCommandsService
 ) {
 
     private val botsApi = TelegramBotsApi(DefaultBotSession::class.java)
-    private val commandParserServices: List<CommandParserService> = listOf(
-        startMessageService, helpMessageService,
-
-        chatOrdersService, createOrderService, joinOrderService, leaveOrderService,
-        closeOrderService, openOrderService, showOrderService, blameDishService,
-
-        addDishService, nameDishService, removeDishService, myOrdersService
-    )
 
     init {
-        helpMessageService.supportedCommands = commandParserServices.map { it.botCommand }
+        botCommandsService.setBotSupportedCommands()
 
-        setBotCommands()
-
-        botsApi.registerBot(AllYouCanEatBot(botUsername, botToken, updateParserService, commandParserServices))
-    }
-
-    private fun setBotCommands() {
-        val objectMapper = ObjectMapper()
-
-        val botCommands = commandParserServices.map {
-            BotCommand().apply {
-                command = it.botCommand.command.lowercase()
-                description = it.botCommand.description
-            }
-        }
-        val botCommandsToString = objectMapper.writeValueAsString(botCommands)
-
-        if (Log.isDebugEnabled()) {
-            Log.debug("bot commands: $botCommandsToString")
-        }
-
-        try {
-            val success = telegramRestClient.setBotCommands(botToken, botCommandsToString)
-            Log.info("bot commands updated: $success")
-        } catch (exception: Exception) {
-            Log.error("failed to set bot commands: ", exception)
-        }
+        botsApi.registerBot(AllYouCanEatBot(botUsername, botToken, updateParserService, botCommandsService.getCommandServices()))
     }
 }
