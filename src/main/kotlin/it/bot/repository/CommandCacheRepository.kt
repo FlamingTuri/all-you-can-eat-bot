@@ -19,6 +19,6 @@ class CommandCacheRepository : PanacheRepository<CommandCacheEntity> {
     fun deleteElapsedChatUserCommand(minutes: Int) {
         val currentTimeNow = Calendar.getInstance()
         currentTimeNow.add(Calendar.MINUTE, -minutes)
-        delete("creationDate <= ?1", minutes)
+        delete("creationDate <= ?1", currentTimeNow.time)
     }
 }
