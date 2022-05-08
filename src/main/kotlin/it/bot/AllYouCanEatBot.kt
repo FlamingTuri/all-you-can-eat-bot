@@ -35,7 +35,7 @@ class AllYouCanEatBot(
         commandParserServices.find {
             it.botCommand.matches(MessageUtils.getChatMessage(update), botUsername)
         }.let {
-            parseUpdate(it, update)
+            updateParserService.parseUpdate(it, update)
         }.also {
             sendMessage(it)
         }
@@ -53,15 +53,6 @@ class AllYouCanEatBot(
             update, "Error: something unexpected happened. Reason: ${exception.message}"
         )
         sendMessage(message)
-    }
-
-    private fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
-        return if (commandParserService == null) {
-            Log.error("no command support for '${MessageUtils.getChatMessage(update)}'")
-            null
-        } else {
-            updateParserService.parseUpdate(commandParserService, update)
-        }
     }
 
     private fun sendMessage(message: SendMessage?) {
