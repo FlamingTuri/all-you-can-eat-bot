@@ -59,7 +59,7 @@ class UpdateParserService(
         }
     }
 
-    fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
+    private fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
         return if (commandParserService == null) {
             Log.error("no command support for '${MessageUtils.getChatMessage(update)}'")
             null
@@ -69,9 +69,13 @@ class UpdateParserService(
             val messageText = MessageUtils.getChatMessage(update)
             val matchResult = regex.matchEntire(messageText)
             return when {
-                matchResult != null -> commandParserService.executeOperation(update, matchResult)
+                matchResult != null -> commandParserService.executeOperation(update, matchResult).also {
+                    deleteCachedCommand(update)
+                }
                 botCommand.isExactMatch(messageText, botUsername) -> addCommandToCache(update, botCommand)
-                else -> MessageUtils.getInvalidCommandMessage(update, botCommand.command, botCommand.format)
+                else -> MessageUtils.getInvalidCommandMessage(update, botCommand.command, botCommand.format).also {
+                    deleteCachedCommand(update)
+                }
             }
         }
     }
@@ -104,5 +108,11 @@ class UpdateParserService(
                 selective = true
             }
         }
+    }
+
+    private fun deleteCachedCommand(update: Update) {
+        val chatId = MessageUtils.getChatId(update)
+        val telegramUserId = MessageUtils.getTelegramUserId(update)
+        commandCacheRepository.deleteChatUserCommand(chatId, telegramUserId)
     }
 }
