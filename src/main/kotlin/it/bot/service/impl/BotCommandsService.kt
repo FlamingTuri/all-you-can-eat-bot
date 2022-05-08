@@ -49,7 +49,7 @@ class BotCommandsService(
         helpMessageService.supportedCommands = getCommandServices().map { it.botCommand }
     }
 
-    final fun getCommandServices(): List<CommandParserService> {
+    fun getCommandServices(): List<CommandParserService> {
         return listOf(
             startMessageService, helpMessageService,
 

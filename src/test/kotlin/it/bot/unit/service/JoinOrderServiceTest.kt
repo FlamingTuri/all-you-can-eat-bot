@@ -5,8 +5,10 @@ import it.bot.model.entity.OrderEntity
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.model.messages.OrderMessages
+import it.bot.repository.CommandCacheRepository
 import it.bot.repository.OrderRepository
 import it.bot.repository.UserRepository
+import it.bot.service.impl.BotCommandsService
 import it.bot.service.impl.command.JoinOrderService
 import it.bot.service.impl.UpdateParserService
 import java.util.Calendar
@@ -26,14 +28,19 @@ class JoinOrderServiceTest {
 
     private val botReopenOrderTimeout = 1
 
-    private val updateParserService = UpdateParserService("test-bot")
     private val orderRepository = Mockito.mock(OrderRepository::class.java)
     private var userRepository = Mockito.mock(UserRepository::class.java)
     private lateinit var joinOrderService: JoinOrderService
+    private val botCommandsService = Mockito.mock(BotCommandsService::class.java)
+    private val commandCacheRepository = Mockito.mock(CommandCacheRepository::class.java)
+    private val updateParserService = UpdateParserService(
+        "test-bot", botCommandsService, commandCacheRepository
+    )
 
     @BeforeAll
     fun setup() {
         joinOrderService = JoinOrderService(botReopenOrderTimeout, orderRepository, userRepository)
+        Mockito.`when`(botCommandsService.getCommandServices()).thenReturn(listOf(joinOrderService))
     }
 
     @Test
@@ -51,7 +58,7 @@ class JoinOrderServiceTest {
             }
         }
 
-        val message = updateParserService.parseUpdate(joinOrderService, update)
+        val message = updateParserService.handleUpdate( update)
         assertEquals(OrderMessages.orderNotFoundError(orderName), message!!.text)
     }
 
@@ -70,7 +77,7 @@ class JoinOrderServiceTest {
             }
         }
 
-        val message = updateParserService.parseUpdate(joinOrderService, update)
+        val message = updateParserService.handleUpdate( update)
         assertEquals(OrderMessages.operationNotAllowedForClosedOrderError(orderName), message!!.text)
     }
 
@@ -106,7 +113,7 @@ class JoinOrderServiceTest {
             }
         }
 
-        val message = updateParserService.parseUpdate(joinOrderService, update)
+        val message = updateParserService.handleUpdate( update)
         assertEquals(OrderMessages.orderCanBeReopenedError(orderName), message!!.text)
     }
 }
