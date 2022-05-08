@@ -20,7 +20,7 @@ import javax.inject.Inject
 class MyOrdersService(
     @Inject private val orderRepository: OrderRepository,
     @Inject private val userDishRepository: UserDishRepository
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand: BotCommand = MyOrdersCommand()
 

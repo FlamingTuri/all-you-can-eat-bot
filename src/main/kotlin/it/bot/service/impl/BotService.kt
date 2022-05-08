@@ -23,6 +23,7 @@ import javax.inject.Inject
 class BotService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.token") private val botToken: String,
+    @Inject private val updateParserService: UpdateParserService,
     @Inject private val startMessageService: StartMessageService,
     @Inject private val helpMessageService: HelpMessageService,
     @Inject private val chatOrdersService: ChatOrdersService,
@@ -55,7 +56,7 @@ class BotService(
 
         setBotCommands()
 
-        botsApi.registerBot(AllYouCanEatBot(botUsername, botToken, commandParserServices))
+        botsApi.registerBot(AllYouCanEatBot(botUsername, botToken, updateParserService, commandParserServices))
     }
 
     private fun setBotCommands() {

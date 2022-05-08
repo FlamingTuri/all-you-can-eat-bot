@@ -23,7 +23,7 @@ class RemoveDishService(
     @Inject private val userRepository: UserRepository,
     @Inject private val dishRepository: DishRepository,
     @Inject private val userDishRepository: UserDishRepository
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand = RemoveDishCommand()
 

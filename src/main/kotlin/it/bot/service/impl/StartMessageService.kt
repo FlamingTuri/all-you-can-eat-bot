@@ -15,7 +15,7 @@ class StartMessageService(
     @ConfigProperty(name = "bot.repo.url", defaultValue = "") val repoUrl: String,
     @ConfigProperty(name = "bot.donate.url", defaultValue = "") val donateUrl: String,
     @Location("welcome.html") val welcomeTemplate: Template
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand = StartMessageCommand()
 

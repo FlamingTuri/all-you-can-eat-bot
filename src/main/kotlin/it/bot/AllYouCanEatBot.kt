@@ -1,6 +1,7 @@
 package it.bot
 
 import io.quarkus.logging.Log
+import it.bot.service.impl.UpdateParserService
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
@@ -8,10 +9,12 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
+
 class AllYouCanEatBot(
     private val botUsername: String,
     private val botToken: String,
-    private val commandParserServices: List<CommandParserService>,
+    private val updateParserService: UpdateParserService,
+    private val commandParserServices: List<CommandParserService>
 ) : TelegramLongPollingBot() {
 
     override fun onUpdateReceived(update: Update) {
@@ -64,7 +67,7 @@ class AllYouCanEatBot(
             Log.error("no command support for '${MessageUtils.getChatMessage(update)}'")
             null
         } else {
-            commandParserService.parseUpdate(update)
+            updateParserService.parseUpdate(commandParserService, update)
         }
     }
 

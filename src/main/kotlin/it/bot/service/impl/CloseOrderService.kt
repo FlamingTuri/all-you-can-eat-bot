@@ -19,7 +19,7 @@ class CloseOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
     @Inject private val orderRepository: OrderRepository,
     @Inject private val showOrderService: ShowOrderService
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand = CloseOrderCommand()
 

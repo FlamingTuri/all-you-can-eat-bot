@@ -21,7 +21,7 @@ class JoinOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
     @Inject private val orderRepository: OrderRepository,
     @Inject private val userRepository: UserRepository,
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand = JoinOrderCommand()
 

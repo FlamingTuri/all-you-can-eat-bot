@@ -20,7 +20,7 @@ import javax.inject.Inject
 class OpenOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
     @Inject private val orderRepository: OrderRepository
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand = OpenOrderCommand()
 

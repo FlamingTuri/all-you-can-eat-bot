@@ -14,7 +14,7 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
 @ApplicationScoped
-class CreateOrderService(@Inject private val orderRepository: OrderRepository) : CommandParserService() {
+class CreateOrderService(@Inject private val orderRepository: OrderRepository) : CommandParserService {
 
     override val botCommand = CreateOrderCommand()
 

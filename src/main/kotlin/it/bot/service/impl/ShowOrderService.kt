@@ -17,7 +17,7 @@ import javax.inject.Inject
 class ShowOrderService(
     @Inject private val orderRepository: OrderRepository,
     @Inject private val dishJpaRepository: DishJpaRepository,
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand = ShowOrderCommand()
 

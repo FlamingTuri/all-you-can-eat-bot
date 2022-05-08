@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 
 @ApplicationScoped
-class HelpMessageService : CommandParserService() {
+class HelpMessageService : CommandParserService {
 
     override val botCommand = HelpMessageCommand()
 

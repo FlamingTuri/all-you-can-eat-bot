@@ -23,7 +23,7 @@ class BlameDishService(
     @ConfigProperty(name = "bot.token") private val botToken: String,
     @Inject private val userDishRepository: UserDishRepository,
     @Inject @RestClient private val telegramRestClient: TelegramRestClient
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand = BlameDishCommand()
 

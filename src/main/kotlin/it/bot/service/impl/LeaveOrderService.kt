@@ -21,7 +21,7 @@ class LeaveOrderService(
     @Inject private val orderRepository: OrderRepository,
     @Inject private val userRepository: UserRepository,
     @Inject private val userDishRepository: UserDishRepository
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand = LeaveOrderCommand()
 

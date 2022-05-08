@@ -15,7 +15,7 @@ import javax.inject.Inject
 class NameDishService(
     @Inject private val userRepository: UserRepository,
     @Inject private val dishRepository: DishRepository
-) : CommandParserService() {
+) : CommandParserService {
 
     override val botCommand = NameDishCommand()
 

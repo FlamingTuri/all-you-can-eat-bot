@@ -13,7 +13,7 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
 @ApplicationScoped
-class ChatOrdersService(@Inject private val orderRepository: OrderRepository) : CommandParserService() {
+class ChatOrdersService(@Inject private val orderRepository: OrderRepository) : CommandParserService {
 
     override val botCommand: BotCommand = ChatOrdersCommand()
 
