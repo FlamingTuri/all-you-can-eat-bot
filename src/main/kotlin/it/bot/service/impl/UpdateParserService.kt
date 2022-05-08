@@ -1,15 +1,20 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
+import it.bot.model.command.BotCommand
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard
 import javax.enterprise.context.ApplicationScoped
 import javax.transaction.Transactional
 
 @ApplicationScoped
-class UpdateParserService {
+class UpdateParserService(
+    @ConfigProperty(name = "bot.username") private val botUsername: String
+) {
 
     @Transactional
     fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
@@ -19,9 +24,23 @@ class UpdateParserService {
         } else {
             val botCommand = commandParserService.botCommand
             val regex = "(?i)${botCommand.command}(?-i)${botCommand.pattern}".toRegex()
-            when (val matchResult = regex.matchEntire(update.message.text)) {
-                null -> MessageUtils.getInvalidCommandMessage(update, botCommand.command, botCommand.format)
-                else -> commandParserService.executeOperation(update, matchResult)
+            val messageText = MessageUtils.getChatMessage(update)
+            val matchResult = regex.matchEntire(messageText)
+            return when {
+                matchResult != null -> commandParserService.executeOperation(update, matchResult)
+                botCommand.isExactMatch(messageText, botUsername) -> getWaitingResponseMessage(update, botCommand)
+                else -> MessageUtils.getInvalidCommandMessage(update, botCommand.command, botCommand.format)
+            }
+        }
+    }
+
+    private fun getWaitingResponseMessage(update: Update, botCommand: BotCommand): SendMessage {
+        val messageText = "Waiting for response: ${botCommand.format}"
+        return MessageUtils.createMessage(update, messageText).apply {
+            replyMarkup = ForceReplyKeyboard().apply {
+                replyToMessageId = update.message.messageId
+                forceReply = true
+                selective = true
             }
         }
     }
