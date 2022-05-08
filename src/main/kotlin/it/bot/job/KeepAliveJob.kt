@@ -1,6 +1,6 @@
 package it.bot.job
 
-import io.quarkus.arc.properties.UnlessBuildProperty
+import io.quarkus.arc.profile.UnlessBuildProfile
 import io.quarkus.logging.Log
 import io.quarkus.scheduler.Scheduled
 import it.bot.client.rest.AllYouCanEatBotRestClient
@@ -9,7 +9,8 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
 
-@UnlessBuildProperty(name = "quarkus.profile", stringValue = "test")
+
+@UnlessBuildProfile("test")
 @Suppress("unused")
 @ApplicationScoped
 class KeepAliveJob(
