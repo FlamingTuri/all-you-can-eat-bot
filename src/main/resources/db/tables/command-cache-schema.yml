@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1-command-cache
+      author: gventurini
+      changes:
+        - createTable:
+            tableName: command_cache_table
+            columns:
+              - column:
+                  name: command_cache_id
+                  type: bigint
+                  constraints:
+                    constraintName: command_cache_primary_key
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: creation_date
+                  type: timestamp(6) without timezone
+              - column:
+                  name: last_update_date
+                  type: timestamp(6) without timezone
+              - column:
+                  name: chat_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: telegram_user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: command
+                  type: text
+        - createSequence:
+            sequenceName: command_cache_sequence

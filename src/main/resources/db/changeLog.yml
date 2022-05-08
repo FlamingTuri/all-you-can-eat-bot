@@ -7,3 +7,5 @@ databaseChangeLog:
       file: db/tables/dish-schema.yml
   - include:
       file: db/tables/user-dish-schema.yml
+  - include:
+      file: db/tables/command-cache-schema.yml
