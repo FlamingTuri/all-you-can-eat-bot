@@ -26,7 +26,7 @@ class JoinOrderServiceTest {
 
     private val botReopenOrderTimeout = 1
 
-    private val updateParserService = UpdateParserService()
+    private val updateParserService = UpdateParserService("test-bot")
     private val orderRepository = Mockito.mock(OrderRepository::class.java)
     private var userRepository = Mockito.mock(UserRepository::class.java)
     private lateinit var joinOrderService: JoinOrderService

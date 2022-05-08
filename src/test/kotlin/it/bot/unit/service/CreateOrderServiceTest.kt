@@ -20,7 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CreateOrderServiceTest {
 
-    private val updateParserService = UpdateParserService()
+    private val updateParserService = UpdateParserService("test-bot")
     private val orderRepository = Mockito.mock(OrderRepository::class.java)
     private lateinit var createOrderService: CreateOrderService
 
