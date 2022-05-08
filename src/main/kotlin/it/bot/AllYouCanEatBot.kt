@@ -33,7 +33,7 @@ class AllYouCanEatBot(
 
     private fun handleCommand(update: Update) {
         commandParserServices.find {
-            matches(it.botCommand.command, MessageUtils.getChatMessage(update))
+            it.botCommand.matches(MessageUtils.getChatMessage(update), botUsername)
         }.let {
             parseUpdate(it, update)
         }.also {
@@ -53,13 +53,6 @@ class AllYouCanEatBot(
             update, "Error: something unexpected happened. Reason: ${exception.message}"
         )
         sendMessage(message)
-    }
-
-    private fun matches(botCommand: String, text: String): Boolean {
-        return text.startsWith("$botCommand ", true) or
-                (text.equals(botCommand, true)) or
-                text.startsWith("$botCommand@$botUsername ", true) or
-                (text.equals("$botCommand@$botUsername", true))
     }
 
     private fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
