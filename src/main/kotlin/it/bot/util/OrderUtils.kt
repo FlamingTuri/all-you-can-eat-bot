@@ -33,6 +33,6 @@ object OrderUtils {
     }
 
     fun isClosedAndElapsed(order: OrderEntity, minutes: Int): Boolean {
-        return order.status == OrderStatus.Close && !TimeUtils.hasTimeElapsed(order, minutes)
+        return order.status == OrderStatus.Closed && !TimeUtils.hasTimeElapsed(order, minutes)
     }
 }

@@ -37,7 +37,7 @@ class JoinOrderService(
 
         return when {
             order == null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
-            order.status == OrderStatus.Close ->
+            order.status == OrderStatus.Closed ->
                 OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, orderName)
             else -> createUserIfNotAlreadyInAnotherOrder(update, order, orderName)
         }

@@ -42,7 +42,7 @@ class RemoveDishService(
         val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))
         return when {
             user == null -> UserUtils.getUserDoesNotBelongToOrderMessage(update)
-            user.order?.status == OrderStatus.Close ->
+            user.order?.status == OrderStatus.Closed ->
                 OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, user.order?.name!!)
             else -> subtractQuantityOrDeleteDish(update, dishMenuNumber, quantityToRemove, user)
         }

@@ -68,7 +68,7 @@ class JoinOrderServiceTest {
     @Test
     fun testJoinClosedOrder() {
         Mockito.`when`(orderRepository.findOpenOrderWithNameForChat(Mockito.eq(1L), Mockito.anyString()))
-            .thenReturn(OrderEntity().apply { status = OrderStatus.Close })
+            .thenReturn(OrderEntity().apply { status = OrderStatus.Closed })
 
         val orderName = "targetOrderName"
         val update = Update().apply {
@@ -101,7 +101,7 @@ class JoinOrderServiceTest {
                 listOf(UserEntity().apply {
                     order = OrderEntity().apply {
                         name = orderName
-                        status = OrderStatus.Close
+                        status = OrderStatus.Closed
                         lastUpdateDate = current.time
                     }
                 })

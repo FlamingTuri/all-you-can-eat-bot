@@ -29,7 +29,7 @@ class CloseOrderService(
 
         return when {
             order == null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
-            order.status == OrderStatus.Close -> getOrderAlreadyClosedMessage(update, order)
+            order.status == OrderStatus.Closed -> getOrderAlreadyClosedMessage(update, order)
             else -> closeOrder(update, order)
         }
     }
@@ -43,7 +43,7 @@ class CloseOrderService(
     }
 
     private fun closeOrder(update: Update, order: OrderEntity): SendMessage {
-        order.status = OrderStatus.Close
+        order.status = OrderStatus.Closed
         orderRepository.persist(order)
 
         val orderDishes = showOrderService.groupOrderDishesByMenuNumber(order)

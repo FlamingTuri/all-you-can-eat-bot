@@ -34,7 +34,7 @@ class LeaveOrderService(
 
         val messageText = when {
             user == null -> getUserForOrderNotFoundErrorMessage(orderName)
-            OrderStatus.Close == user.order?.status -> getLeaveClosedOrderErrorMessage(user)
+            OrderStatus.Closed == user.order?.status -> getLeaveClosedOrderErrorMessage(user)
             else -> leaveOpenOrderIfNoUserDishesArePresent(user)
         }
 

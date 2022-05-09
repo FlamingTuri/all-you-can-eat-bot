@@ -30,7 +30,7 @@ class OrderRepository : PanacheRepository<OrderEntity> {
         val query = """
             chatId = ?1
             and name = ?2
-            and (status = 'Open' or (status = 'Close' and ?3 < lastUpdateDate))
+            and (status = 'Open' or (status = 'Closed' and ?3 < lastUpdateDate))
         """
         val currentTimeNow = Calendar.getInstance()
         currentTimeNow.add(Calendar.MINUTE, -botReopenOrderTimeout)
