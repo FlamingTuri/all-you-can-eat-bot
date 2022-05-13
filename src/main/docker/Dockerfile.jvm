@@ -2,28 +2,20 @@ FROM openjdk:11
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
 
-
-# We make four distinct layers so if there are application changes the library layers can be re-used
+# Using distinct layers to allow re-using library layers
 COPY --chown=185 build/quarkus-app/lib/ /deployments/lib/
 COPY --chown=185 build/quarkus-app/*.jar /deployments/
 COPY --chown=185 build/quarkus-app/app/ /deployments/app/
 COPY --chown=185 build/quarkus-app/quarkus/ /deployments/quarkus/
+COPY --chown=185 src/main/docker/start.sh /deployments
 
 USER 185
 
-CMD ["java", \
-  "-Dquarkus.http.host=0.0.0.0", \
-  "-Dquarkus.http.port=${PORT}", \
-  "-Dquarkus.datasource.jdbc.url=${POSTGRESQL_URL}", \
-  "-Dquarkus.datasource.username=${POSTGRESQL_USERNAME}", \
-  "-Dquarkus.datasource.password=${POSTGRESQL_PASSWORD}", \
-  "-Dbot.token=${BOT_TOKEN}", \
-  "-Dbot.repo.url=${BOT_REPO_URL}", \
-  "-Dbot.donate.url=${BOT_DONATE_URL}", \
-  "-Dquarkus.scheduler.enabled=true", \
-  "-Dbot.cleanup.job.cron.expr=0 0 */12 * * ?", \
-  "-Dall-you-can-eat-bot-rest-client/mp-rest/url=${BOT_REST_URL}", \
-  "-Djava.util.logging.manager=org.jboss.logmanager.LogManager", \
-  "-jar", \
-  "/deployments/quarkus-run.jar" \
+ENTRYPOINT ["/deployments/start.sh", \
+  "${PORT}", \
+  "${DATABASE_URL}", \
+  "${BOT_TOKEN}", \
+  "${BOT_REPO_URL}", \
+  "${BOT_DONATE_URL}", \
+  "${BOT_REST_URL}" \
 ]
