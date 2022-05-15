@@ -1,17 +1,10 @@
 package it.bot.service.impl
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.quarkus.arc.profile.UnlessBuildProfile
-import io.quarkus.logging.Log
 import io.quarkus.runtime.Startup
 import it.bot.AllYouCanEatBot
-import it.bot.client.rest.TelegramRestClient
-import it.bot.service.impl.command.*
-import it.bot.service.interfaces.CommandParserService
 import org.eclipse.microprofile.config.inject.ConfigProperty
-import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.telegram.telegrambots.meta.TelegramBotsApi
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
