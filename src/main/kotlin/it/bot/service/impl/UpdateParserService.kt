@@ -61,8 +61,9 @@ class UpdateParserService(
 
     private fun parseUpdate(commandParserService: CommandParserService?, update: Update): SendMessage? {
         return if (commandParserService == null) {
-            Log.error("no command support for '${MessageUtils.getChatMessage(update)}'")
-            null
+            val errorMessage = "no command support for '${MessageUtils.getChatMessage(update)}'"
+            Log.error(errorMessage)
+            MessageUtils.createMessage(update, "Error: $errorMessage")
         } else {
             val botCommand = commandParserService.botCommand
             val regex = "(?i)${botCommand.command}(?-i)${botCommand.pattern}".toRegex()
