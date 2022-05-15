@@ -6,6 +6,7 @@ plugins {
     kotlin("plugin.allopen") version kotlinVersion
     id("io.quarkus")
     id("idea")
+    application
 }
 
 group = "me.turi"
@@ -15,6 +16,10 @@ repositories {
     mavenCentral()
     mavenLocal()
     gradlePluginPortal()
+}
+
+application {
+    mainClass.set("it.bot.App")
 }
 
 val quarkusPlatformGroupId: String by project
