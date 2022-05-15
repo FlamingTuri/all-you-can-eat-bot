@@ -30,7 +30,7 @@ class JoinOrderService(
     }
 
     private fun joinOrder(update: Update, matchResult: MatchResult): SendMessage {
-        val (_, orderName, _) = matchResult.destructured
+        val orderName = destructure(matchResult)
 
         val chatId = MessageUtils.getChatId(update)
         val order = orderRepository.findOpenOrderWithNameForChat(chatId, orderName)
@@ -41,6 +41,11 @@ class JoinOrderService(
                 OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, orderName)
             else -> createUserIfNotAlreadyInAnotherOrder(update, order, orderName)
         }
+    }
+
+    private fun destructure(matchResult: MatchResult): String {
+        val (_, _, orderName, _) = matchResult.destructured
+        return orderName
     }
 
     private fun createUserIfNotAlreadyInAnotherOrder(

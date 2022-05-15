@@ -26,7 +26,7 @@ class LeaveOrderService(
     override val botCommand = LeaveOrderCommand()
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
-        val (_, orderName, _) = matchResult.destructured
+        val orderName = destructure(matchResult)
 
         val telegramUserId = MessageUtils.getTelegramUserId(update)
         val chatId = MessageUtils.getChatId(update)
@@ -39,6 +39,11 @@ class LeaveOrderService(
         }
 
         return MessageUtils.createMessage(update, messageText)
+    }
+
+    private fun destructure(matchResult: MatchResult): String {
+        val (_, _, orderName, _) = matchResult.destructured
+        return orderName
     }
 
     private fun getUserForOrderNotFoundErrorMessage(orderName: String): String {

@@ -25,7 +25,7 @@ class OpenOrderService(
     override val botCommand = OpenOrderCommand()
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
-        val (_, orderName, _) = matchResult.destructured
+        val orderName = destructure(matchResult)
         val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(update), orderName)
 
         return when {
@@ -33,6 +33,11 @@ class OpenOrderService(
             order.status == OrderStatus.Open -> getOrderAlreadyOpenMessage(update, order)
             else -> openOrderIfTimeoutIsNotElapsed(update, order)
         }
+    }
+
+    private fun destructure(matchResult: MatchResult): String {
+        val (_, _, orderName, _) = matchResult.destructured
+        return orderName
     }
 
     private fun getOrderAlreadyOpenMessage(update: Update, order: OrderEntity): SendMessage {

@@ -66,7 +66,7 @@ class UpdateParserService(
             MessageUtils.createMessage(update, "Error: $errorMessage")
         } else {
             val botCommand = commandParserService.botCommand
-            val regex = "(?i)${botCommand.command}(?-i)${botCommand.pattern}".toRegex()
+            val regex = "(?i)${botCommand.command}(@$botUsername)?(?-i)${botCommand.pattern}".toRegex()
             val messageText = MessageUtils.getChatMessage(update)
             val matchResult = regex.matchEntire(messageText)
             return when {

@@ -22,7 +22,7 @@ class ShowOrderService(
     override val botCommand = ShowOrderCommand()
 
     override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
-        val (_, orderName, _) = matchResult.destructured
+        val orderName = destructure(matchResult)
 
         return when (val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(update), orderName)) {
             null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
@@ -35,7 +35,11 @@ class ShowOrderService(
                 MessageUtils.createMessage(update, messageText)
             }
         }
+    }
 
+    private fun destructure(matchResult: MatchResult): String {
+        val (_, _, orderName, _) = matchResult.destructured
+        return orderName
     }
 
     fun groupOrderDishesByMenuNumber(order: OrderEntity): List<DishDto> {

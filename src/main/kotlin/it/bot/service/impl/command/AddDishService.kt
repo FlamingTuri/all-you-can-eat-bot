@@ -50,7 +50,7 @@ class AddDishService(
     }
 
     private fun destructure(matchResult: MatchResult): Triple<Int, Int, String?> {
-        val (_, dishMenuNumber, _, _, dishQuantity, _, _, dishName, _) = matchResult.destructured
+        val (_, _, dishMenuNumber, _, _, dishQuantity, _, _, dishName, _) = matchResult.destructured
         return Triple(
             dishMenuNumber.toInt(),
             if (dishQuantity == "") 1 else dishQuantity.toInt(),

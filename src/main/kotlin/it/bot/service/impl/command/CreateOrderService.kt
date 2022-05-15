@@ -23,7 +23,7 @@ class CreateOrderService(@Inject private val orderRepository: OrderRepository) :
     }
 
     private fun createOrderIfNotExists(update: Update, matchResult: MatchResult): SendMessage {
-        val (_, orderName, _) = matchResult.destructured
+        val orderName = destructure(matchResult)
 
         if (checkIfOrderAlreadyExists(update, orderName)) {
             return MessageUtils.createMessage(update, OrderMessages.orderWithTheSameNameError)
@@ -31,6 +31,11 @@ class CreateOrderService(@Inject private val orderRepository: OrderRepository) :
 
         createOrder(update, orderName)
         return MessageUtils.createMessage(update, OrderMessages.orderCreationSuccessful(orderName))
+    }
+
+    private fun destructure(matchResult: MatchResult): String {
+        val (_, _, orderName, _) = matchResult.destructured
+        return orderName
     }
 
     private fun checkIfOrderAlreadyExists(update: Update, orderName: String): Boolean {

@@ -49,7 +49,7 @@ class RemoveDishService(
     }
 
     private fun destructure(matchResult: MatchResult): Pair<Int, Int?> {
-        val (_, dishMenuNumber, _, _, dishQuantity) = matchResult.destructured
+        val (_, _, dishMenuNumber, _, _, dishQuantity) = matchResult.destructured
         return Pair(
             dishMenuNumber.toInt(),
             if (dishQuantity == "") null else dishQuantity.toInt(),

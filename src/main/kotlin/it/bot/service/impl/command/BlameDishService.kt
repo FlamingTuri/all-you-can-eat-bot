@@ -42,7 +42,7 @@ class BlameDishService(
     }
 
     private fun destructure(matchResult: MatchResult): Pair<Int, String?> {
-        val (_, dishMenuNumber, _, _, orderName, _) = matchResult.destructured
+        val (_, _, dishMenuNumber, _, _, orderName, _) = matchResult.destructured
         return Pair(dishMenuNumber.toInt(), if (orderName == "") null else orderName)
     }
 
