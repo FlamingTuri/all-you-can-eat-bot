@@ -60,3 +60,11 @@ databaseChangeLog:
         - addUniqueConstraint:
             tableName: order_table
             columnNames: name, chat_id
+  - changeSet:
+      id: 5-order
+      author: gventurini
+      changes:
+        - modifyDataType:
+            tableName: order_table
+            columnName: status
+            newDataType: varchar(6)
