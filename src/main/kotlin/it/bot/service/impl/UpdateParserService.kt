@@ -83,7 +83,7 @@ class UpdateParserService(
     private fun addCommandToCache(update: Update, botCommand: BotCommand): SendMessage {
         val commandCache = CommandCacheEntity().apply {
             chatId = MessageUtils.getChatId(update)
-            telegramUserId = MessageUtils.getChatId(update)
+            telegramUserId = MessageUtils.getTelegramUserId(update)
             command = botCommand.command
         }
         commandCacheRepository.persist(commandCache)
