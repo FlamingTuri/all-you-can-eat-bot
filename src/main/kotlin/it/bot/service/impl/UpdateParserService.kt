@@ -37,9 +37,7 @@ class UpdateParserService(
     }
 
     private fun getCommandServiceUsingCache(update: Update): CommandParserService? {
-        val chatId = MessageUtils.getChatId(update)
-        val telegramUserId = MessageUtils.getTelegramUserId(update)
-        val commandCache = commandCacheRepository.findChatUserCommand(chatId, telegramUserId)
+        val commandCache = getExistingCommandCacheEntity(update)
 
         return commandCache?.let {
             commandCacheRepository.delete(it)
@@ -82,14 +80,25 @@ class UpdateParserService(
     }
 
     private fun addCommandToCache(update: Update, botCommand: BotCommand): SendMessage {
-        val commandCache = CommandCacheEntity().apply {
-            chatId = MessageUtils.getChatId(update)
-            telegramUserId = MessageUtils.getTelegramUserId(update)
-            command = botCommand.command
+        val commandCache = when (val existingCommandCache = getExistingCommandCacheEntity(update)) {
+            null -> CommandCacheEntity().apply {
+                this.chatId = MessageUtils.getChatId(update)
+                this.telegramUserId = MessageUtils.getTelegramUserId(update)
+                command = botCommand.command
+            }
+            else -> existingCommandCache.apply {
+                command = botCommand.command
+            }
         }
         commandCacheRepository.persist(commandCache)
 
         return getWaitingResponseMessage(update, botCommand)
+    }
+
+    private fun getExistingCommandCacheEntity(update: Update): CommandCacheEntity? {
+        val chatId = MessageUtils.getChatId(update)
+        val telegramUserId = MessageUtils.getTelegramUserId(update)
+        return commandCacheRepository.findChatUserCommand(chatId, telegramUserId)
     }
 
     private fun getWaitingResponseMessage(update: Update, botCommand: BotCommand): SendMessage {
