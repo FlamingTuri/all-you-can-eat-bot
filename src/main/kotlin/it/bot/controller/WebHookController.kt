@@ -17,14 +17,14 @@ import javax.ws.rs.core.Response.Status
 @Startup
 @Path("/callback")
 class WebHookController(
-    @ConfigProperty(name = "bot.webhook") private val botWebhook: String,
+    @ConfigProperty(name = "bot.webhook.callback.path") private val botWebhookCallbackPath: String,
     @Inject private val botService: BotService
 ) {
 
     @POST
     @Path("/{botPath}")
     fun receiveUpdate(@PathParam botPath: String, update: Update): Response {
-        val response = if (botPath == botWebhook) {
+        val response = if (botPath == botWebhookCallbackPath) {
             Log.info("received webhook update")
             botService.callBack(update)
             Response.noContent()

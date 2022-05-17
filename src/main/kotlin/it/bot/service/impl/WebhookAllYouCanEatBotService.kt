@@ -15,7 +15,7 @@ import javax.inject.Inject
 class WebhookAllYouCanEatBotService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.token") private val botToken: String,
-    @ConfigProperty(name = "bot.webhook") private val botWebhook: String,
+    @ConfigProperty(name = "bot.webhook.callback.path") private val botWebhookCallbackPath: String,
     @Inject private val updateParserService: UpdateParserService
 ) : TelegramWebhookBot(), AllYouCanEatBotService {
 
@@ -35,6 +35,6 @@ class WebhookAllYouCanEatBotService(
     }
 
     override fun getBotPath(): String {
-        return botUsername
+        return botWebhookCallbackPath
     }
 }
