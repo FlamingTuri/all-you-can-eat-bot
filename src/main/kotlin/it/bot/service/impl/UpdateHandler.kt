@@ -1,39 +1,33 @@
-package it.bot
+package it.bot.service.impl
 
 import io.quarkus.logging.Log
-import it.bot.service.impl.UpdateParserService
 import it.bot.util.MessageUtils
-import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.bots.AbsSender
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
+class UpdateHandler(private val updateParserService: UpdateParserService) {
 
-class AllYouCanEatBot(
-    private val botUsername: String,
-    private val botToken: String,
-    private val updateParserService: UpdateParserService
-) : TelegramLongPollingBot() {
-
-    override fun onUpdateReceived(update: Update) {
+    fun handleUpdate(absSender: AbsSender, update: Update) {
         if (Log.isDebugEnabled()) {
             Log.debug("update received $update")
         }
 
         if (update.hasMessage() && update.message.hasText()) {
             try {
-                handleUpdateAndNotifyResult(update)
+                handleUpdateAndNotifyResult(absSender, update)
             } catch (exception: Exception) {
-                handleUnexpectedError(update, exception)
+                handleUnexpectedError(absSender, update, exception)
             }
         }
     }
 
-    private fun handleUpdateAndNotifyResult(update: Update) {
-        sendMessage(updateParserService.handleUpdate(update))
+    private fun handleUpdateAndNotifyResult(absSender: AbsSender, update: Update) {
+        sendMessage(absSender, updateParserService.handleUpdate(update))
     }
 
-    private fun handleUnexpectedError(update: Update, exception: Exception) {
+    private fun handleUnexpectedError(absSender: AbsSender, update: Update, exception: Exception) {
         Log.error(
             "unexpected error occurred: " +
                     "chatId ${MessageUtils.getChatId(update)}, " +
@@ -44,24 +38,16 @@ class AllYouCanEatBot(
         val message = MessageUtils.createMessage(
             update, "Error: something unexpected happened. Reason: ${exception.message}"
         )
-        sendMessage(message)
+        sendMessage(absSender, message)
     }
 
-    private fun sendMessage(message: SendMessage?) {
+    private fun sendMessage(absSender: AbsSender, message: SendMessage?) {
         message?.also {
             try {
-                execute(it)
+                absSender.execute(it)
             } catch (e: TelegramApiException) {
                 Log.error(e)
             }
         } ?: Log.info("no message to send")
-    }
-
-    override fun getBotUsername(): String {
-        return botUsername
-    }
-
-    override fun getBotToken(): String {
-        return botToken
     }
 }
