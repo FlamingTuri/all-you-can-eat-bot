@@ -16,6 +16,7 @@ ENTRYPOINT ["/deployments/start.sh", \
   "${DATABASE_URL}", \
   "${BOT_USERNAME}", \
   "${BOT_TOKEN}", \
+  "${BOT_WEBHOOK}", \
   "${BOT_REPO_URL}", \
   "${BOT_DONATE_URL}", \
   "${BOT_REST_URL}" \
