@@ -5,6 +5,7 @@ import io.quarkus.logging.Log
 import io.quarkus.runtime.ShutdownEvent
 import io.quarkus.runtime.Startup
 import it.bot.service.interfaces.AllYouCanEatBotService
+import it.bot.util.Constants
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.bots.TelegramWebhookBot
 import org.telegram.telegrambots.meta.TelegramBotsApi
@@ -26,7 +27,7 @@ import javax.inject.Inject
 class BotService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.token") private val botToken: String,
-    @ConfigProperty(name = "bot.webhook") private val botWebhook: String,
+    @ConfigProperty(name = "bot.host") private val botHost: String,
     @Inject private val updateParserService: UpdateParserService,
     @Inject private val botCommandsService: BotCommandsService,
     @Inject private val allYouCanEatBotService: AllYouCanEatBotService
@@ -59,7 +60,8 @@ class BotService(
         val setWebhook = SetWebhook().apply {
             // this is the public URL accessed by Telegram servers
             // it must be reverse proxied to the internalUrl if they are different
-            url = botWebhook
+            // the callback url will be $botHost/${Constants.basePath}/callback
+            url = "$botHost${Constants.basePath}"
         }
         botsApi.registerBot(bot, setWebhook)
     }
