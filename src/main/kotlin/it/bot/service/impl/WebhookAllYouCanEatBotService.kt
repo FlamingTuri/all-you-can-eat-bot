@@ -21,7 +21,7 @@ class WebhookAllYouCanEatBotService(
     private val updateHandler = UpdateHandler(updateParserService)
 
     init {
-        Log.info("Setup webhook bot")
+        Log.info("Init webhook bot")
     }
 
     override fun handleUpdate(update: Update) {

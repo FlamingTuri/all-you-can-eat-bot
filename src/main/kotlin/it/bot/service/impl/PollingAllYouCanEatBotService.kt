@@ -21,7 +21,7 @@ class PollingAllYouCanEatBotService(
     private val updateHandler = UpdateHandler(updateParserService)
 
     init {
-        Log.info("Setup polling bot")
+        Log.info("Init polling bot")
     }
 
     override fun handleUpdate(update: Update) {
