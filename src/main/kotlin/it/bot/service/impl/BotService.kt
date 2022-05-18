@@ -64,11 +64,8 @@ class BotService(
         botsApi.registerBot(bot, setWebhook)
     }
 
-    fun callBack(update: Update?) {
-        when (allYouCanEatBotService) {
-            is WebhookAllYouCanEatBotService -> allYouCanEatBotService.onWebhookUpdateReceived(update)
-            else -> Log.error("unsupported operation")
-        }
+    fun handleUpdate(update: Update) {
+        allYouCanEatBotService.handleUpdate(update)
     }
 
     fun onStop(@Observes ev: ShutdownEvent?) {
