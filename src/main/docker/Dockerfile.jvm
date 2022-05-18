@@ -14,9 +14,10 @@ USER 185
 ENTRYPOINT ["/deployments/start.sh", \
   "${PORT}", \
   "${DATABASE_URL}", \
+  "${BOT_TYPE}", \
   "${BOT_USERNAME}", \
   "${BOT_TOKEN}", \
-  "${BOT_WEBHOOK}", \
+  "${BOT_HOST}", \
   "${BOT_REPO_URL}", \
   "${BOT_DONATE_URL}", \
   "${BOT_REST_URL}" \
