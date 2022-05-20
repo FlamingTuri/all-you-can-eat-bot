@@ -42,6 +42,6 @@ class WebhookAllYouCanEatBotService(
     }
 
     override fun getBotPath(): String {
-        return ""
+        return botToken
     }
 }
