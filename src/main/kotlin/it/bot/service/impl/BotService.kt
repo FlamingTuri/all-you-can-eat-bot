@@ -4,9 +4,11 @@ import io.quarkus.arc.profile.UnlessBuildProfile
 import io.quarkus.logging.Log
 import io.quarkus.runtime.ShutdownEvent
 import io.quarkus.runtime.Startup
+import it.bot.client.rest.TelegramRestClient
 import it.bot.service.interfaces.AllYouCanEatBotService
 import it.bot.util.Constants
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.telegram.telegrambots.bots.TelegramWebhookBot
 import org.telegram.telegrambots.meta.TelegramBotsApi
 import org.telegram.telegrambots.meta.api.methods.updates.SetWebhook
@@ -28,6 +30,7 @@ class BotService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.token") private val botToken: String,
     @ConfigProperty(name = "bot.host") private val botHost: String,
+    @Inject @RestClient private val telegramRestClient: TelegramRestClient,
     @Inject private val updateParserService: UpdateParserService,
     @Inject private val botCommandsService: BotCommandsService,
     @Inject private val allYouCanEatBotService: AllYouCanEatBotService
@@ -46,6 +49,9 @@ class BotService(
     }
 
     private fun initLongPollingBot(bot: LongPollingBot) {
+        // telegram does not allow to manually retrieve updates if a webhook is active
+        telegramRestClient.deleteWebhook(botToken)
+
         botsApi = TelegramBotsApi(DefaultBotSession::class.java)
         botsApi.registerBot(bot)
     }

@@ -27,4 +27,8 @@ interface TelegramRestClient {
         @QueryParam("chat_id") chatId: Long,
         @QueryParam("user_id") userId: Long
     ): ApiResponse<Map<String, Any>>
+
+    @GET
+    @Path("/bot{botToken}/deleteWebhook")
+    fun deleteWebhook(@PathParam("botToken") botToken: String): ApiResponse<Boolean>
 }
