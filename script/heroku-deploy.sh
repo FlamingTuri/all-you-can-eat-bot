@@ -18,3 +18,5 @@ docker tag "$IMAGE_NAME" "$REGISTRY_NAME"
 docker push "$REGISTRY_NAME"
 
 heroku container:release web -a "$APP_NAME"
+
+docker image prune -f
