@@ -28,7 +28,7 @@ class CreateOrderServiceTest {
     private val commandCacheRepository = Mockito.mock(CommandCacheRepository::class.java)
     private lateinit var createOrderService: CreateOrderService
     private val updateParserService = UpdateParserService(
-        "test-bot", botCommandsService, commandCacheRepository
+        "test-bot", 5, botCommandsService, commandCacheRepository
     )
 
     @BeforeAll

@@ -34,7 +34,7 @@ class JoinOrderServiceTest {
     private val botCommandsService = Mockito.mock(BotCommandsService::class.java)
     private val commandCacheRepository = Mockito.mock(CommandCacheRepository::class.java)
     private val updateParserService = UpdateParserService(
-        "test-bot", botCommandsService, commandCacheRepository
+        "test-bot", 5, botCommandsService, commandCacheRepository
     )
 
     @BeforeAll
