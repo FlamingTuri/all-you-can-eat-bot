@@ -18,6 +18,7 @@ import javax.transaction.Transactional
 @ApplicationScoped
 class UpdateParserService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
+    @ConfigProperty(name = "bot.command.cache.validity.time") private val minutes: Int,
     @Inject private val botCommandsService: BotCommandsService,
     @Inject private val commandCacheRepository: CommandCacheRepository
 ) {
@@ -98,7 +99,7 @@ class UpdateParserService(
     private fun getExistingCommandCacheEntity(update: Update): CommandCacheEntity? {
         val chatId = MessageUtils.getChatId(update)
         val telegramUserId = MessageUtils.getTelegramUserId(update)
-        return commandCacheRepository.findChatUserCommand(chatId, telegramUserId)
+        return commandCacheRepository.findChatUserCommand(chatId, telegramUserId, minutes)
     }
 
     private fun getWaitingResponseMessage(update: Update, botCommand: BotCommand): SendMessage {

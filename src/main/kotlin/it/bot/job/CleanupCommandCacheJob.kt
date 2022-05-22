@@ -18,7 +18,7 @@ import javax.transaction.Transactional
 @Suppress("unused")
 @ApplicationScoped
 class CleanupCommandCacheJob(
-    @ConfigProperty(name = "bot.command.cache.deletion.timeout") private val minutes: Int,
+    @ConfigProperty(name = "bot.command.cache.validity.time") private val minutes: Int,
     @Inject val commandCacheRepository: CommandCacheRepository
 ) {
 

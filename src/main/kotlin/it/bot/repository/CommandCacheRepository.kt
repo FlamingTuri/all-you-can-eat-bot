@@ -8,8 +8,11 @@ import javax.enterprise.context.ApplicationScoped
 @ApplicationScoped
 class CommandCacheRepository : PanacheRepository<CommandCacheEntity> {
 
-    fun findChatUserCommand(chatId: Long, telegramUserId: Long): CommandCacheEntity? {
-        return find("chatId = ?1 and telegramUserId = ?2", chatId, telegramUserId).firstResult()
+    fun findChatUserCommand(chatId: Long, telegramUserId: Long, minutes: Int): CommandCacheEntity? {
+        val currentTimeNow = Calendar.getInstance()
+        currentTimeNow.add(Calendar.MINUTE, -minutes)
+        val query = "chatId = ?1 and telegramUserId = ?2 and lastUpdateDate >= ?3"
+        return find(query, chatId, telegramUserId, currentTimeNow.time).firstResult()
     }
 
     fun deleteChatUserCommand(chatId: Long, telegramUserId: Long) {
@@ -19,6 +22,6 @@ class CommandCacheRepository : PanacheRepository<CommandCacheEntity> {
     fun deleteElapsedChatUserCommand(minutes: Int) {
         val currentTimeNow = Calendar.getInstance()
         currentTimeNow.add(Calendar.MINUTE, -minutes)
-        delete("creationDate <= ?1", currentTimeNow.time)
+        delete("lastUpdateDate <= ?1", currentTimeNow.time)
     }
 }
