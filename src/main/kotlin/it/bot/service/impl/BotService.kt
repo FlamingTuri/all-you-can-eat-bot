@@ -2,7 +2,6 @@ package it.bot.service.impl
 
 import io.quarkus.arc.profile.UnlessBuildProfile
 import io.quarkus.logging.Log
-import io.quarkus.runtime.ShutdownEvent
 import io.quarkus.runtime.Startup
 import it.bot.client.rest.TelegramRestClient
 import it.bot.service.interfaces.AllYouCanEatBotService
@@ -16,9 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.generics.LongPollingBot
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 import org.telegram.telegrambots.updatesreceivers.DefaultWebhook
-import org.telegram.telegrambots.util.WebhookUtils
 import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.event.Observes
 import javax.inject.Inject
 
 
@@ -74,12 +71,5 @@ class BotService(
 
     fun handleUpdate(update: Update) {
         allYouCanEatBotService.handleUpdate(update)
-    }
-
-    fun onStop(@Observes ev: ShutdownEvent?) {
-        Log.info("The application is stopping...")
-        when (allYouCanEatBotService) {
-            is WebhookAllYouCanEatBotService -> WebhookUtils.clearWebhook(allYouCanEatBotService)
-        }
     }
 }
