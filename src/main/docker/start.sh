@@ -42,6 +42,7 @@ java \
   -DBOT_REPO_URL="${BOT_REPO_URL}" \
   -DBOT_DONATE_URL="${BOT_DONATE_URL}" \
   -DCRON_ENABLED=true \
+  -DKEEP_ALIVE_JOB_CRON_EXPR="0 */45 * * * ?" \
   -DCLEANUP_JOB_CRON_EXPR="0 0 */12 * * ?" \
   -Dall-you-can-eat-bot-rest-client/mp-rest/url="${BOT_REST_URL}" \
   -Djava.util.logging.manager=org.jboss.logmanager.LogManager \
