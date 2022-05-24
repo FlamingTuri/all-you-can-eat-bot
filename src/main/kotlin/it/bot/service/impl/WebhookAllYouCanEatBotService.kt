@@ -42,6 +42,8 @@ class WebhookAllYouCanEatBotService(
     }
 
     override fun getBotPath(): String {
+        // using the bot token as part of the webhook callback path ensures that webhook requests
+        // come from telegram (as long as the token remains secret)
         return botToken
     }
 }
