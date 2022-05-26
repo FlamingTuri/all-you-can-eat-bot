@@ -107,13 +107,13 @@ class UpdateParserService(
         val format = botCommand.format
         val messageText = "Finalize $command operation by replying with a message with the following format: $format"
         return MessageUtils.createMessage(update, messageText).apply {
-            if (update.message.isGroupMessage) {
-                setReplyMarkupForGroups(this, update)
+            if (update.message.chat.isGroupChat || update.message.chat.isSuperGroupChat) {
+                setReplyMarkup(this, update)
             }
         }
     }
 
-    private fun setReplyMarkupForGroups(sendMessage: SendMessage, update: Update) {
+    private fun setReplyMarkup(sendMessage: SendMessage, update: Update) {
         sendMessage.apply {
             replyToMessageId = update.message.messageId
             replyMarkup = ForceReplyKeyboard().apply {
