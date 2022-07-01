@@ -47,10 +47,4 @@ class OrderRepository : PanacheRepository<OrderEntity> {
         """
         return find(query, sort, telegramUserId, orderName ?: "").list()
     }
-
-    fun findOrdersNotUpdatedFor(hours: Int): List<OrderEntity> {
-        val currentTimeNow = Calendar.getInstance()
-        currentTimeNow.add(Calendar.HOUR, -hours)
-        return find("lastUpdateDate <= ?1", currentTimeNow.time).list()
-    }
 }
