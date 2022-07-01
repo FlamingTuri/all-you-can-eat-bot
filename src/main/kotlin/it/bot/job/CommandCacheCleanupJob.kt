@@ -4,10 +4,6 @@ import io.quarkus.arc.profile.UnlessBuildProfile
 import io.quarkus.logging.Log
 import io.quarkus.scheduler.Scheduled
 import it.bot.repository.CommandCacheRepository
-import it.bot.repository.DishRepository
-import it.bot.repository.OrderRepository
-import it.bot.repository.UserDishRepository
-import it.bot.repository.UserRepository
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -17,13 +13,13 @@ import javax.transaction.Transactional
 @UnlessBuildProfile("test")
 @Suppress("unused")
 @ApplicationScoped
-class CleanupCommandCacheJob(
+class CommandCacheCleanupJob(
     @ConfigProperty(name = "bot.command.cache.validity.time") private val minutes: Int,
     @Inject val commandCacheRepository: CommandCacheRepository
 ) {
 
     @Transactional
-    @Scheduled(cron = "{bot.cleanup.command.cache.job.cron.expr}")
+    @Scheduled(cron = "{bot.command.cache.cleanup.job.cron.expr}")
     fun cleanup() {
         Log.info("CleanupCommandCacheJob: started, minutes configured for command cache deletion: $minutes")
         commandCacheRepository.deleteElapsedChatUserCommand(minutes)
