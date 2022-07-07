@@ -67,7 +67,7 @@ class AddDishService(
 
         return MessageUtils.createMessage(
             update,
-            "Successfully add number ${DishUtils.formatDishInfo(dish)} " +
+            "Successfully added number ${DishUtils.formatDishInfo(dish)} " +
                     "to order '${user.order!!.name}' (your quantity: ${userDish.quantity})"
         )
     }

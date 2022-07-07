@@ -6,6 +6,7 @@ import it.bot.model.entity.CommandCacheEntity
 import it.bot.repository.CommandCacheRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
+import it.bot.util.Regexes
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -65,9 +66,8 @@ class UpdateParserService(
             MessageUtils.createMessage(update, "Error: $errorMessage")
         } else {
             val botCommand = commandParserService.botCommand
-            val regex = "(?i)${botCommand.command}(@$botUsername)?(?-i)${botCommand.pattern}".toRegex()
             val messageText = MessageUtils.getChatMessage(update)
-            val matchResult = regex.matchEntire(messageText)
+            val matchResult = Regexes.matchMessageWithBotCommand(botCommand, botUsername, messageText)
             return when {
                 matchResult != null -> commandParserService.executeOperation(update, matchResult).also {
                     deleteCachedCommand(update)

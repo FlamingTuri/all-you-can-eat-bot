@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import io.quarkus.logging.Log
 import it.bot.client.rest.TelegramRestClient
 import it.bot.service.impl.command.AddDishService
+import it.bot.service.impl.command.AddDishesService
 import it.bot.service.impl.command.BlameDishService
 import it.bot.service.impl.command.ChatOrdersService
 import it.bot.service.impl.command.CloseOrderService
@@ -40,6 +41,7 @@ class BotCommandsService(
     @Inject private val showOrderService: ShowOrderService,
     @Inject private val blameDishService: BlameDishService,
     @Inject private val addDishService: AddDishService,
+    @Inject private val addDishesService: AddDishesService,
     @Inject private val nameDishService: NameDishService,
     @Inject private val removeDishService: RemoveDishService,
     @Inject private val myOrdersService: MyOrdersService
@@ -53,10 +55,10 @@ class BotCommandsService(
         return listOf(
             startMessageService, helpMessageService,
 
-            chatOrdersService, createOrderService, joinOrderService, leaveOrderService,
-            closeOrderService, openOrderService, showOrderService, blameDishService,
+            addDishService, addDishesService, nameDishService, removeDishService, myOrdersService,
 
-            addDishService, nameDishService, removeDishService, myOrdersService
+            chatOrdersService, createOrderService, joinOrderService, leaveOrderService,
+            closeOrderService, openOrderService, showOrderService, blameDishService
         )
     }
 
