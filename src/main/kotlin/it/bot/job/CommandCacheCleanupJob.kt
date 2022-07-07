@@ -6,7 +6,6 @@ import io.quarkus.scheduler.Scheduled
 import it.bot.repository.CommandCacheRepository
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import javax.transaction.Transactional
 
 
@@ -15,7 +14,7 @@ import javax.transaction.Transactional
 @ApplicationScoped
 class CommandCacheCleanupJob(
     @ConfigProperty(name = "bot.command.cache.validity.time") private val minutes: Int,
-    @Inject val commandCacheRepository: CommandCacheRepository
+    private val commandCacheRepository: CommandCacheRepository
 ) {
 
     @Transactional

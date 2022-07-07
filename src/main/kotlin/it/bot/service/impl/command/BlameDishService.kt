@@ -15,14 +15,13 @@ import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 @Startup
 @ApplicationScoped
 class BlameDishService(
     @ConfigProperty(name = "bot.token") private val botToken: String,
-    @Inject private val userDishRepository: UserDishRepository,
-    @Inject @RestClient private val telegramRestClient: TelegramRestClient
+    private val userDishRepository: UserDishRepository,
+    @RestClient private val telegramRestClient: TelegramRestClient
 ) : CommandParserService {
 
     override val botCommand = BlameDishCommand()

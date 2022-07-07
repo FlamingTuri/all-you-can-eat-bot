@@ -12,7 +12,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import javax.transaction.Transactional
 
 
@@ -20,8 +19,8 @@ import javax.transaction.Transactional
 class UpdateParserService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.command.cache.validity.time") private val minutes: Int,
-    @Inject private val botCommandsService: BotCommandsService,
-    @Inject private val commandCacheRepository: CommandCacheRepository
+    private val botCommandsService: BotCommandsService,
+    private val commandCacheRepository: CommandCacheRepository
 ) {
 
     @Transactional

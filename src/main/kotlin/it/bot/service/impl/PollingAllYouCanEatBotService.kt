@@ -7,7 +7,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 
 @ApplicationScoped
@@ -15,7 +14,7 @@ import javax.inject.Inject
 class PollingAllYouCanEatBotService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.token") private val botToken: String,
-    @Inject private val updateParserService: UpdateParserService,
+    updateParserService: UpdateParserService,
 ) : TelegramLongPollingBot(), AllYouCanEatBotService {
 
     private val updateHandler = UpdateHandler(updateParserService)

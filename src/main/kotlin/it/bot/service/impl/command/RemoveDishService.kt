@@ -16,13 +16,12 @@ import it.bot.util.UserUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 @ApplicationScoped
 class RemoveDishService(
-    @Inject private val userRepository: UserRepository,
-    @Inject private val dishRepository: DishRepository,
-    @Inject private val userDishRepository: UserDishRepository
+    private val userRepository: UserRepository,
+    private val dishRepository: DishRepository,
+    private val userDishRepository: UserDishRepository
 ) : CommandParserService {
 
     override val botCommand = RemoveDishCommand()

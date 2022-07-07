@@ -23,35 +23,34 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 
 @ApplicationScoped
 class BotCommandsService(
     @ConfigProperty(name = "bot.token") private val botToken: String,
-    @Inject @RestClient private val telegramRestClient: TelegramRestClient,
-    @Inject private val startMessageService: StartMessageService,
-    @Inject private val helpMessageService: HelpMessageService,
-    @Inject private val chatOrdersService: ChatOrdersService,
-    @Inject private val createOrderService: CreateOrderService,
-    @Inject private val joinOrderService: JoinOrderService,
-    @Inject private val leaveOrderService: LeaveOrderService,
-    @Inject private val closeOrderService: CloseOrderService,
-    @Inject private val openOrderService: OpenOrderService,
-    @Inject private val showOrderService: ShowOrderService,
-    @Inject private val blameDishService: BlameDishService,
-    @Inject private val addDishService: AddDishService,
-    @Inject private val addDishesService: AddDishesService,
-    @Inject private val nameDishService: NameDishService,
-    @Inject private val removeDishService: RemoveDishService,
-    @Inject private val myOrdersService: MyOrdersService
+    @RestClient private val telegramRestClient: TelegramRestClient,
+    private val startMessageService: StartMessageService,
+    private val helpMessageService: HelpMessageService,
+    private val chatOrdersService: ChatOrdersService,
+    private val createOrderService: CreateOrderService,
+    private val joinOrderService: JoinOrderService,
+    private val leaveOrderService: LeaveOrderService,
+    private val closeOrderService: CloseOrderService,
+    private val openOrderService: OpenOrderService,
+    private val showOrderService: ShowOrderService,
+    private val blameDishService: BlameDishService,
+    private val addDishService: AddDishService,
+    private val addDishesService: AddDishesService,
+    private val nameDishService: NameDishService,
+    private val removeDishService: RemoveDishService,
+    private val myOrdersService: MyOrdersService
 ) {
 
     init {
         helpMessageService.supportedCommands = getCommandServices().map { it.botCommand }
     }
 
-    fun getCommandServices(): List<CommandParserService> {
+    final fun getCommandServices(): List<CommandParserService> {
         return listOf(
             startMessageService, helpMessageService,
 

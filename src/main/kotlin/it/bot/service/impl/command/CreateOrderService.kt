@@ -11,10 +11,9 @@ import it.bot.util.MessageUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 @ApplicationScoped
-class CreateOrderService(@Inject private val orderRepository: OrderRepository) : CommandParserService {
+class CreateOrderService(private val orderRepository: OrderRepository) : CommandParserService {
 
     override val botCommand = CreateOrderCommand()
 

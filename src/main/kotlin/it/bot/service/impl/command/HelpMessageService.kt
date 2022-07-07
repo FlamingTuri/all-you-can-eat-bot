@@ -4,9 +4,9 @@ import it.bot.model.command.BotCommand
 import it.bot.model.command.HelpMessageCommand
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
-import javax.enterprise.context.ApplicationScoped
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
+import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class HelpMessageService : CommandParserService {

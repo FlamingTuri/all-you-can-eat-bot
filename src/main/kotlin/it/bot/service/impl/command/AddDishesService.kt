@@ -8,12 +8,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 @ApplicationScoped
 class AddDishesService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
-    @Inject private val addDishService: AddDishService
+    private val addDishService: AddDishService
 ) : CommandParserService {
 
     override val botCommand = AddDishesCommand()

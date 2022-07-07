@@ -14,13 +14,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 @ApplicationScoped
 class JoinOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
-    @Inject private val orderRepository: OrderRepository,
-    @Inject private val userRepository: UserRepository,
+    private val orderRepository: OrderRepository,
+    private val userRepository: UserRepository,
 ) : CommandParserService {
 
     override val botCommand = JoinOrderCommand()

@@ -16,7 +16,6 @@ import org.telegram.telegrambots.meta.generics.LongPollingBot
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 import org.telegram.telegrambots.updatesreceivers.DefaultWebhook
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 
 @Suppress("unused")
@@ -27,10 +26,9 @@ class BotService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.token") private val botToken: String,
     @ConfigProperty(name = "bot.host") private val botHost: String,
-    @Inject @RestClient private val telegramRestClient: TelegramRestClient,
-    @Inject private val updateParserService: UpdateParserService,
-    @Inject private val botCommandsService: BotCommandsService,
-    @Inject private val allYouCanEatBotService: AllYouCanEatBotService
+    @RestClient private val telegramRestClient: TelegramRestClient,
+    botCommandsService: BotCommandsService,
+    private val allYouCanEatBotService: AllYouCanEatBotService
 ) {
 
     private lateinit var botsApi: TelegramBotsApi

@@ -11,7 +11,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.springframework.data.domain.PageRequest
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import javax.transaction.Transactional
 
 
@@ -20,10 +19,10 @@ import javax.transaction.Transactional
 @ApplicationScoped
 class OrdersCleanupJob(
     @ConfigProperty(name = "bot.orders.deletion.timeout") private val hours: Int,
-    @Inject val orderRepository: OrderJpaRepository,
-    @Inject val userRepository: UserRepository,
-    @Inject val dishRepository: DishRepository,
-    @Inject val userDishRepository: UserDishRepository,
+    private val orderRepository: OrderJpaRepository,
+    private val userRepository: UserRepository,
+    private val dishRepository: DishRepository,
+    private val userDishRepository: UserDishRepository,
 ) {
 
     @Transactional

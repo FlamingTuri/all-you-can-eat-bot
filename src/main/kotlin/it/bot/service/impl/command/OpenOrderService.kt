@@ -13,13 +13,12 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 
 @ApplicationScoped
 class OpenOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
-    @Inject private val orderRepository: OrderRepository
+    private val orderRepository: OrderRepository
 ) : CommandParserService {
 
     override val botCommand = OpenOrderCommand()

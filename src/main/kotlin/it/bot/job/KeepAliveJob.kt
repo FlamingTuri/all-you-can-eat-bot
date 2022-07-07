@@ -6,7 +6,6 @@ import io.quarkus.scheduler.Scheduled
 import it.bot.client.rest.AllYouCanEatBotRestClient
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import javax.transaction.Transactional
 
 
@@ -14,7 +13,7 @@ import javax.transaction.Transactional
 @Suppress("unused")
 @ApplicationScoped
 class KeepAliveJob(
-    @Inject @RestClient private val allYouCanEatBotRestClient: AllYouCanEatBotRestClient
+    @RestClient private val allYouCanEatBotRestClient: AllYouCanEatBotRestClient
 ) {
 
     @Transactional

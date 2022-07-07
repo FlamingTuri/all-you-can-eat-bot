@@ -8,14 +8,13 @@ import org.telegram.telegrambots.bots.TelegramWebhookBot
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod
 import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 
 @ApplicationScoped
 @IfBuildProperty(name = "bot.type", stringValue = "webhook")
 class WebhookAllYouCanEatBotService(
     @ConfigProperty(name = "bot.username") private val botUsername: String,
     @ConfigProperty(name = "bot.token") private val botToken: String,
-    @Inject private val updateParserService: UpdateParserService
+    updateParserService: UpdateParserService
 ) : TelegramWebhookBot(), AllYouCanEatBotService {
 
     private val updateHandler = UpdateHandler(updateParserService)
