@@ -9,10 +9,8 @@ import it.bot.repository.CommandCacheRepository
 import it.bot.repository.OrderRepository
 import it.bot.repository.UserRepository
 import it.bot.service.impl.BotCommandsService
-import it.bot.service.impl.command.JoinOrderService
 import it.bot.service.impl.UpdateParserService
-import java.util.Calendar
-import kotlin.test.assertEquals
+import it.bot.service.impl.command.JoinOrderService
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -21,6 +19,8 @@ import org.telegram.telegrambots.meta.api.objects.Chat
 import org.telegram.telegrambots.meta.api.objects.Message
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.User
+import java.util.Calendar
+import kotlin.test.assertEquals
 
 @QuarkusTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -30,16 +30,20 @@ class JoinOrderServiceTest {
 
     private val orderRepository = Mockito.mock(OrderRepository::class.java)
     private var userRepository = Mockito.mock(UserRepository::class.java)
-    private lateinit var joinOrderService: JoinOrderService
-    private val botCommandsService = Mockito.mock(BotCommandsService::class.java)
     private val commandCacheRepository = Mockito.mock(CommandCacheRepository::class.java)
-    private val updateParserService = UpdateParserService(
-        "test-bot", 5, botCommandsService, commandCacheRepository
-    )
+    private lateinit var joinOrderService: JoinOrderService
+    private lateinit var botCommandsService: BotCommandsService
+    private lateinit var updateParserService: UpdateParserService
 
     @BeforeAll
     fun setup() {
         joinOrderService = JoinOrderService(botReopenOrderTimeout, orderRepository, userRepository)
+        botCommandsService = Mockito.mock(BotCommandsService::class.java)
+
+        updateParserService = UpdateParserService(
+            "test-bot", 5, botCommandsService, commandCacheRepository
+        )
+
         Mockito.`when`(botCommandsService.getCommandServices()).thenReturn(listOf(joinOrderService))
     }
 
@@ -61,7 +65,7 @@ class JoinOrderServiceTest {
             }
         }
 
-        val message = updateParserService.handleUpdate( update)
+        val message = updateParserService.handleUpdate(update)
         assertEquals(OrderMessages.orderNotFoundError(orderName), message!!.text)
     }
 
@@ -83,7 +87,7 @@ class JoinOrderServiceTest {
             }
         }
 
-        val message = updateParserService.handleUpdate( update)
+        val message = updateParserService.handleUpdate(update)
         assertEquals(OrderMessages.operationNotAllowedForClosedOrderError(orderName), message!!.text)
     }
 
@@ -119,7 +123,7 @@ class JoinOrderServiceTest {
             }
         }
 
-        val message = updateParserService.handleUpdate( update)
+        val message = updateParserService.handleUpdate(update)
         assertEquals(OrderMessages.orderCanBeReopenedError(orderName), message!!.text)
     }
 }

@@ -24,16 +24,20 @@ import kotlin.test.assertEquals
 class CreateOrderServiceTest {
 
     private val orderRepository = Mockito.mock(OrderRepository::class.java)
-    private val botCommandsService = Mockito.mock(BotCommandsService::class.java)
     private val commandCacheRepository = Mockito.mock(CommandCacheRepository::class.java)
+    private lateinit var botCommandsService: BotCommandsService
     private lateinit var createOrderService: CreateOrderService
-    private val updateParserService = UpdateParserService(
-        "test-bot", 5, botCommandsService, commandCacheRepository
-    )
+    private lateinit var updateParserService: UpdateParserService
 
     @BeforeAll
     fun setup() {
+        botCommandsService = Mockito.mock(BotCommandsService::class.java)
         createOrderService = CreateOrderService(orderRepository)
+
+        updateParserService = UpdateParserService(
+            "test-bot", 5, botCommandsService, commandCacheRepository
+        )
+
         Mockito.`when`(botCommandsService.getCommandServices()).thenReturn(listOf(createOrderService))
     }
 
