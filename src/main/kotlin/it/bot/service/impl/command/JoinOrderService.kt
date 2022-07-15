@@ -1,6 +1,7 @@
 package it.bot.service.impl.command
 
 import it.bot.model.command.JoinOrderCommand
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
@@ -12,7 +13,6 @@ import it.bot.util.MessageUtils
 import it.bot.util.OrderUtils
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -24,21 +24,21 @@ class JoinOrderService(
 
     override val botCommand = JoinOrderCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
-        return joinOrder(update, matchResult)
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage? {
+        return joinOrder(messageDto, matchResult)
     }
 
-    private fun joinOrder(update: Update, matchResult: MatchResult): SendMessage {
+    private fun joinOrder(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
         val orderName = destructure(matchResult)
 
-        val chatId = MessageUtils.getChatId(update)
+        val chatId = MessageUtils.getChatId(messageDto)
         val order = orderRepository.findOpenOrderWithNameForChat(chatId, orderName)
 
         return when {
-            order == null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
+            order == null -> OrderUtils.getOrderNotFoundMessage(messageDto, orderName)
             order.status == OrderStatus.Closed ->
-                OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, orderName)
-            else -> createUserIfNotAlreadyInAnotherOrder(update, order, orderName)
+                OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(messageDto, orderName)
+            else -> createUserIfNotAlreadyInAnotherOrder(messageDto, order, orderName)
         }
     }
 
@@ -48,40 +48,40 @@ class JoinOrderService(
     }
 
     private fun createUserIfNotAlreadyInAnotherOrder(
-        update: Update,
+        messageDto: MessageDto,
         order: OrderEntity,
         orderName: String
     ): SendMessage {
-        val telegramUserId = MessageUtils.getTelegramUserId(update)
+        val telegramUserId = MessageUtils.getTelegramUserId(messageDto)
         val users = userRepository.findUsers(telegramUserId)
 
         return users.firstOrNull {
             OrderUtils.isClosedAndElapsed(it.order!!, botReopenOrderTimeout)
         }?.let {
-            MessageUtils.createMessage(update, OrderMessages.orderCanBeReopenedError(it.order?.name!!))
+            MessageUtils.createMessage(messageDto, OrderMessages.orderCanBeReopenedError(it.order?.name!!))
         } ?: users.firstOrNull {
             it.order?.status == OrderStatus.Open
         }?.let {
-            getUserAlreadyJoinedAnotherOrderMessage(update, orderName, it.order?.name!!)
-        } ?: createUser(update, order, orderName)
+            getUserAlreadyJoinedAnotherOrderMessage(messageDto, orderName, it.order?.name!!)
+        } ?: createUser(messageDto, order, orderName)
     }
 
-    private fun createUser(update: Update, order: OrderEntity, orderName: String): SendMessage {
+    private fun createUser(messageDto: MessageDto, order: OrderEntity, orderName: String): SendMessage {
         return UserEntity().apply {
-            telegramUserId = MessageUtils.getTelegramUserId(update)
+            telegramUserId = MessageUtils.getTelegramUserId(messageDto)
             this.order = order
         }.also {
             userRepository.persist(it)
         }.let {
-            MessageUtils.createMessage(update, "Successfully joined order '$orderName'")
+            MessageUtils.createMessage(messageDto, "Successfully joined order '$orderName'")
         }
     }
 
     private fun getUserAlreadyJoinedAnotherOrderMessage(
-        update: Update, orderName: String, joinedOrderName: String
+        messageDto: MessageDto, orderName: String, joinedOrderName: String
     ): SendMessage {
         return MessageUtils.createMessage(
-            update,
+            messageDto,
             if (orderName == joinedOrderName) "Error: you have already joined '$orderName'"
             else "Error: you cannot join '$orderName' order, you must first leave '$joinedOrderName' order"
         )

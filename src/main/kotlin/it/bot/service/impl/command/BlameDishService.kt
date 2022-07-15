@@ -4,6 +4,7 @@ import io.quarkus.logging.Log
 import io.quarkus.runtime.Startup
 import it.bot.client.rest.TelegramRestClient
 import it.bot.model.command.BlameDishCommand
+import it.bot.model.dto.MessageDto
 import it.bot.model.dto.TelegramUserDto
 import it.bot.model.entity.UserDishEntity
 import it.bot.repository.UserDishRepository
@@ -13,7 +14,6 @@ import it.bot.util.MessageUtils
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 
 @Startup
@@ -26,18 +26,18 @@ class BlameDishService(
 
     override val botCommand = BlameDishCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
         val (dishMenuNumber, orderName) = destructure(matchResult)
 
-        val userDishes = userDishRepository.findUserDishes(dishMenuNumber, orderName, MessageUtils.getChatId(update))
+        val userDishes = userDishRepository.findUserDishes(dishMenuNumber, orderName, MessageUtils.getChatId(messageDto))
 
         val message = if (userDishes.isEmpty()) {
-            getUserDishesNotFoundError(dishMenuNumber, orderName, update)
+            getUserDishesNotFoundError(dishMenuNumber, orderName, messageDto)
         } else {
             getUserDishesFoundMessage(userDishes)
         }
 
-        return MessageUtils.createMessage(update, message)
+        return MessageUtils.createMessage(messageDto, message)
     }
 
     private fun destructure(matchResult: MatchResult): Pair<Int, String?> {
@@ -45,10 +45,10 @@ class BlameDishService(
         return Pair(dishMenuNumber.toInt(), if (orderName == "") null else orderName)
     }
 
-    private fun getUserDishesNotFoundError(dishMenuNumber: Int, orderName: String?, update: Update): String {
+    private fun getUserDishesNotFoundError(dishMenuNumber: Int, orderName: String?, messageDto: MessageDto): String {
         Log.error(
             "dish number $dishMenuNumber not found " +
-                    "for chat ${MessageUtils.getChatId(update)} and order name $orderName"
+                    "for chat ${MessageUtils.getChatId(messageDto)} and order name $orderName"
         )
         return "Error: dish $dishMenuNumber not found for orders, " +
                 "make sure you used /blame command in the correct chat"

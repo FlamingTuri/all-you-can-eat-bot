@@ -2,6 +2,7 @@ package it.bot.service.impl.command
 
 import io.quarkus.logging.Log
 import it.bot.model.command.RemoveDishCommand
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.UserDishEntity
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
@@ -14,7 +15,6 @@ import it.bot.util.MessageUtils
 import it.bot.util.OrderUtils
 import it.bot.util.UserUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -26,24 +26,24 @@ class RemoveDishService(
 
     override val botCommand = RemoveDishCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
         val (dishMenuNumber, quantityToRemove) = destructure(matchResult)
 
         if ((quantityToRemove != null) && (quantityToRemove <= 0)) {
             Log.error(
                 "inserted a wrong quantity value: $quantityToRemove, " +
-                        "telegramUserId: ${MessageUtils.getTelegramUserId(update)}, " +
-                        "telegramChatId: ${MessageUtils.getChatId(update)}"
+                        "telegramUserId: ${MessageUtils.getTelegramUserId(messageDto)}, " +
+                        "telegramChatId: ${MessageUtils.getChatId(messageDto)}"
             )
-            return MessageUtils.createMessage(update, "Error: quantity to remove must be greater than 0")
+            return MessageUtils.createMessage(messageDto, "Error: quantity to remove must be greater than 0")
         }
 
-        val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))
+        val user = userRepository.findUser(MessageUtils.getTelegramUserId(messageDto))
         return when {
-            user == null -> UserUtils.getUserDoesNotBelongToOrderMessage(update)
+            user == null -> UserUtils.getUserDoesNotBelongToOrderMessage(messageDto)
             user.order?.status == OrderStatus.Closed ->
-                OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, user.order?.name!!)
-            else -> subtractQuantityOrDeleteDish(update, dishMenuNumber, quantityToRemove, user)
+                OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(messageDto, user.order?.name!!)
+            else -> subtractQuantityOrDeleteDish(messageDto, dishMenuNumber, quantityToRemove, user)
         }
     }
 
@@ -56,7 +56,7 @@ class RemoveDishService(
     }
 
     private fun subtractQuantityOrDeleteDish(
-        update: Update, dishMenuNumber: Int, quantityToRemove: Int?, user: UserEntity
+        messageDto: MessageDto, dishMenuNumber: Int, quantityToRemove: Int?, user: UserEntity
     ): SendMessage {
         val userDish = userDishRepository.findUserDish(dishMenuNumber, user.telegramUserId!!)
 
@@ -66,7 +66,7 @@ class RemoveDishService(
             else -> subtractQuantity(userDish, quantityToRemove)
         }
 
-        return MessageUtils.createMessage(update, messageText)
+        return MessageUtils.createMessage(messageDto, messageText)
     }
 
     private fun deleteUserDish(userDish: UserDishEntity): String {

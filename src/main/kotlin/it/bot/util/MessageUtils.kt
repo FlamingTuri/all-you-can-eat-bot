@@ -1,21 +1,21 @@
 package it.bot.util
 
 import io.quarkus.logging.Log
+import it.bot.model.dto.MessageDto
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 
 object MessageUtils {
 
-    fun getInvalidCommandMessage(update: Update, command: String, commandFormat: String): SendMessage {
-        Log.error("invalid format for operation $command: ${update.message.text}")
+    fun getInvalidCommandMessage(messageDto: MessageDto, command: String, commandFormat: String): SendMessage {
+        Log.error("invalid format for operation $command: ${messageDto.text}")
         return createMessage(
-            update,
+            messageDto,
             "Error: invalid format for operation $command, accepted format: $command $commandFormat"
         )
     }
 
-    fun createMessage(update: Update, messageText: String): SendMessage {
-        return createMessage(getChatId(update), messageText)
+    fun createMessage(messageDto: MessageDto, messageText: String): SendMessage {
+        return createMessage(getChatId(messageDto), messageText)
     }
 
     fun createMessage(chatId: Long, messageText: String): SendMessage {
@@ -25,10 +25,8 @@ object MessageUtils {
         }
     }
 
-    fun getTelegramUserId(update: Update): Long = update.message.from.id
+    fun getTelegramUserId(messageDto: MessageDto): Long = messageDto.from.id
 
-    fun getChatId(update: Update): Long = update.message.chatId
-
-    fun getChatMessage(update: Update): String = update.message.text
+    fun getChatId(messageDto: MessageDto): Long = messageDto.chat.id
 
 }

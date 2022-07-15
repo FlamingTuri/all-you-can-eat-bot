@@ -2,10 +2,10 @@ package it.bot.service.impl.command
 
 import it.bot.model.command.BotCommand
 import it.bot.model.command.HelpMessageCommand
+import it.bot.model.dto.MessageDto
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -15,7 +15,7 @@ class HelpMessageService : CommandParserService {
 
     var supportedCommands: List<BotCommand> = listOf()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
         val commandsToString = supportedCommands.groupBy {
             it.commandType
         }.entries.joinToString("\n") { entry ->
@@ -28,7 +28,7 @@ class HelpMessageService : CommandParserService {
         val messageText = "Commands supported by all you can eat bot:\n$commandsToString" +
                 "\n\nNote: the value after ':' will be used when a command param has not been specified"
 
-        return MessageUtils.createMessage(update, messageText).apply {
+        return MessageUtils.createMessage(messageDto, messageText).apply {
             enableHtml(true)
         }
     }

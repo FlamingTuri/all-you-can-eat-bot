@@ -2,23 +2,23 @@ package it.bot.util
 
 import io.quarkus.logging.Log
 import it.bot.model.dto.DishDto
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.model.messages.OrderMessages
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 
 object OrderUtils {
 
-    fun getOrderNotFoundMessage(update: Update, orderName: String): SendMessage {
-        Log.error("order $orderName not found for chatId ${MessageUtils.getChatId(update)}")
-        return MessageUtils.createMessage(update, OrderMessages.orderNotFoundError(orderName))
+    fun getOrderNotFoundMessage(messageDto: MessageDto, orderName: String): SendMessage {
+        Log.error("order $orderName not found for chatId ${MessageUtils.getChatId(messageDto)}")
+        return MessageUtils.createMessage(messageDto, OrderMessages.orderNotFoundError(orderName))
     }
 
-    fun getOperationNotAllowedWhenOrderIsClosedMessage(update: Update, orderName: String): SendMessage {
-        Log.error("order $orderName is closed for chatId ${MessageUtils.getChatId(update)}")
+    fun getOperationNotAllowedWhenOrderIsClosedMessage(messageDto: MessageDto, orderName: String): SendMessage {
+        Log.error("order $orderName is closed for chatId ${MessageUtils.getChatId(messageDto)}")
         return MessageUtils.createMessage(
-            update, OrderMessages.operationNotAllowedForClosedOrderError(orderName)
+            messageDto, OrderMessages.operationNotAllowedForClosedOrderError(orderName)
         )
     }
 

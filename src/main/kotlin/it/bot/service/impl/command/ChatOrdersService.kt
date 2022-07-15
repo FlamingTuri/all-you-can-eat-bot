@@ -2,13 +2,13 @@ package it.bot.service.impl.command
 
 import it.bot.model.command.BotCommand
 import it.bot.model.command.ChatOrdersCommand
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -16,13 +16,13 @@ class ChatOrdersService(private val orderRepository: OrderRepository) : CommandP
 
     override val botCommand: BotCommand = ChatOrdersCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
-        val orders = orderRepository.findOrders(MessageUtils.getChatId(update))
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
+        val orders = orderRepository.findOrders(MessageUtils.getChatId(messageDto))
         val messageText = when {
             orders.isEmpty() -> "The current chat does not have any order"
             else -> formatChatOrders(orders)
         }
-        return MessageUtils.createMessage(update, messageText).apply {
+        return MessageUtils.createMessage(messageDto, messageText).apply {
             enableMarkdown(true)
         }
     }

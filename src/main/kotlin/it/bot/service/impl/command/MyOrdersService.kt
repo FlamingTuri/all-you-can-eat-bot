@@ -4,6 +4,7 @@ import io.quarkus.logging.Log
 import io.quarkus.panache.common.Sort
 import it.bot.model.command.BotCommand
 import it.bot.model.command.MyOrdersCommand
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.entity.UserDishEntity
 import it.bot.repository.OrderRepository
@@ -11,7 +12,6 @@ import it.bot.repository.UserDishRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 
 
@@ -23,19 +23,19 @@ class MyOrdersService(
 
     override val botCommand: BotCommand = MyOrdersCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
         val orderName = destructure(matchResult)
 
-        val telegramUserId = MessageUtils.getTelegramUserId(update)
+        val telegramUserId = MessageUtils.getTelegramUserId(messageDto)
         val sort = Sort.by("status")
         val orders = orderRepository.findOrderForUser(telegramUserId, orderName, sort)
 
         val messageText = when {
-            orders.isEmpty() -> getNoOrderToDisplayMessage(update, orderName)
-            else -> formatUserOrders(update, orders)
+            orders.isEmpty() -> getNoOrderToDisplayMessage(messageDto, orderName)
+            else -> formatUserOrders(messageDto, orders)
         }
 
-        return MessageUtils.createMessage(update, messageText).apply {
+        return MessageUtils.createMessage(messageDto, messageText).apply {
             enableMarkdown(true)
         }
     }
@@ -45,16 +45,16 @@ class MyOrdersService(
         return if (orderName == "") null else orderName
     }
 
-    private fun getNoOrderToDisplayMessage(update: Update, orderName: String?): String {
-        Log.info("User ${MessageUtils.getTelegramUserId(update)} does not have any order, orderName '$orderName'")
+    private fun getNoOrderToDisplayMessage(messageDto: MessageDto, orderName: String?): String {
+        Log.info("User ${MessageUtils.getTelegramUserId(messageDto)} does not have any order, orderName '$orderName'")
         return when (orderName) {
             null -> "You do not have any order to display"
             else -> "You have not joined order '$orderName'"
         }
     }
 
-    private fun formatUserOrders(update: Update, orders: List<OrderEntity>): String {
-        val telegramUserId = MessageUtils.getTelegramUserId(update)
+    private fun formatUserOrders(messageDto: MessageDto, orders: List<OrderEntity>): String {
+        val telegramUserId = MessageUtils.getTelegramUserId(messageDto)
         val userOrdersIds = orders.map { it.orderId }
         val sort = Sort.by("d.menuNumber")
         val userDishes = userDishRepository.findUserDishes(telegramUserId, userOrdersIds, sort)
