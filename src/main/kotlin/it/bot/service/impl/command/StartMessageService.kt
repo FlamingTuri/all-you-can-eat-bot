@@ -8,6 +8,8 @@ import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -20,12 +22,26 @@ class StartMessageService(
     override val botCommand = StartMessageCommand()
 
     override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
-        val messageText = welcomeTemplate
-            .data("repoUrl", repoUrl)
-            .data("donateUrl", donateUrl)
-            .render()
+        val messageText = welcomeTemplate.render()
+
         return MessageUtils.createMessage(messageDto, messageText).apply {
             enableHtml(true)
+            replyMarkup = InlineKeyboardMarkup().apply {
+                keyboard = mutableListOf(
+                    mutableListOf(
+                        InlineKeyboardButton().apply {
+                            text = "GitHub page \uD83D\uDC1B"
+                            url = repoUrl
+                        }
+                    ),
+                    mutableListOf(
+                        InlineKeyboardButton().apply {
+                            text = "Buy me a coffee ☕"
+                            url = donateUrl
+                        }
+                    )
+                )
+            }
         }
     }
 }
