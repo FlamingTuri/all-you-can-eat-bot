@@ -2,6 +2,8 @@ package it.bot.service.impl.command
 
 import io.quarkus.logging.Log
 import it.bot.model.command.CreateOrderCommand
+import it.bot.model.command.JoinOrderCommand
+import it.bot.model.command.LeaveOrderCommand
 import it.bot.model.dto.MessageDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
@@ -10,6 +12,8 @@ import it.bot.repository.OrderRepository
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -30,7 +34,21 @@ class CreateOrderService(private val orderRepository: OrderRepository) : Command
 
         createOrder(messageDto, orderName)
 
-        return MessageUtils.createMessage(messageDto, OrderMessages.orderCreationSuccessful(orderName))
+        val response = MessageUtils.createMessage(messageDto, OrderMessages.orderCreationSuccessful(orderName))
+        return response.apply {
+            replyMarkup = InlineKeyboardMarkup().apply {
+                keyboard = mutableListOf(mutableListOf(
+                    InlineKeyboardButton().apply {
+                        text = "join"
+                        callbackData = "${JoinOrderCommand().command} $orderName"
+                    },
+                    InlineKeyboardButton().apply {
+                        text = "leave"
+                        callbackData = "${LeaveOrderCommand().command} $orderName"
+                    }
+                ))
+            }
+        }
     }
 
     private fun destructure(matchResult: MatchResult): String {
