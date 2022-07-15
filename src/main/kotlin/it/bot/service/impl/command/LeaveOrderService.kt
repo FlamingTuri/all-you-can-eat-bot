@@ -4,7 +4,6 @@ import it.bot.model.command.LeaveOrderCommand
 import it.bot.model.dto.MessageDto
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
-import it.bot.repository.OrderRepository
 import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
@@ -17,7 +16,6 @@ import javax.enterprise.context.ApplicationScoped
 @ApplicationScoped
 class LeaveOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
-    private val orderRepository: OrderRepository,
     private val userRepository: UserRepository,
     private val userDishRepository: UserDishRepository
 ) : CommandParserService {
