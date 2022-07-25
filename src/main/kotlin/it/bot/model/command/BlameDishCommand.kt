@@ -13,4 +13,6 @@ class BlameDishCommand : BotCommand {
     override val description: String = "search who ordered a dish"
 
     override val commandType: CommandType = CommandType.Group
+
+    override fun getInlineKeyboardButtonText(): String? = "blame"
 }

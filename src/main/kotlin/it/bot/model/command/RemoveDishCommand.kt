@@ -11,4 +11,6 @@ class RemoveDishCommand : BotCommand {
     override val description: String = "remove a dish from an OPEN order"
 
     override val commandType: CommandType = CommandType.Anywhere
+
+    override fun getInlineKeyboardButtonText(): String? = "remove"
 }

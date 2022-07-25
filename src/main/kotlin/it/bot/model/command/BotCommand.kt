@@ -1,5 +1,7 @@
 package it.bot.model.command
 
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
+
 interface BotCommand {
 
     val command: String
@@ -11,6 +13,17 @@ interface BotCommand {
     val description: String
 
     val commandType: CommandType
+
+    fun getInlineKeyboardButton(): InlineKeyboardButton? {
+        return getInlineKeyboardButtonText()?.let {
+            InlineKeyboardButton().apply {
+                text = it
+                callbackData = command
+            }
+        }
+    }
+
+    fun getInlineKeyboardButtonText(): String? = null
 
     fun matches(text: String, botUsername: String): Boolean {
         return text.startsWith("$command ", true) or
