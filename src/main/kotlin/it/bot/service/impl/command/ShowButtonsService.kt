@@ -10,26 +10,64 @@ import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class ShowButtonsService : CommandParserService {
 
     override val botCommand = ShowButtonsCommand()
+    private val orderButtonsSubCommand = "/orderButtons"
+    private val dishButtonsSubCommand = "/dishButtons"
 
     override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage? {
+        val subCommand = destructure(matchResult)
+
         val response = MessageUtils.createMessage(messageDto, "Select the operation")
+
         return response.apply {
             replyMarkup = InlineKeyboardMarkup().apply {
-                keyboard = mutableListOf(
-                    mutableListOf(
-                        AddDishesCommand().getInlineKeyboardButton(),
-                        NameDishCommand().getInlineKeyboardButton(),
-                        RemoveDishCommand().getInlineKeyboardButton(),
-                        BlameDishCommand().getInlineKeyboardButton()
-                    )
-                )
+                keyboard = getKeyboardButtons(subCommand)
             }
         }
+    }
+
+    private fun destructure(matchResult: MatchResult): String {
+        val (_, _, _, subCommand, _) = matchResult.destructured
+        return subCommand
+    }
+
+    private fun getKeyboardButtons(subCommand: String): List<List<InlineKeyboardButton>> {
+        return when (subCommand) {
+            orderButtonsSubCommand -> TODO()
+            dishButtonsSubCommand -> getDishButtonsMenu()
+            else -> getMainButtonsMenu()
+        }.map { it.filterNotNull() }
+    }
+
+    private fun getDishButtonsMenu(): List<List<InlineKeyboardButton?>> {
+        return mutableListOf(
+            mutableListOf(
+                AddDishesCommand().getInlineKeyboardButton(),
+                NameDishCommand().getInlineKeyboardButton(),
+                RemoveDishCommand().getInlineKeyboardButton(),
+                BlameDishCommand().getInlineKeyboardButton()
+            )
+        )
+    }
+
+    private fun getMainButtonsMenu(): List<List<InlineKeyboardButton>> {
+        return mutableListOf(
+            mutableListOf(
+                InlineKeyboardButton().apply {
+                    text = "order"
+                    callbackData = "${botCommand.command} $orderButtonsSubCommand"
+                },
+                InlineKeyboardButton().apply {
+                    text = "dish"
+                    callbackData = "${botCommand.command} $dishButtonsSubCommand"
+                }
+            )
+        )
     }
 }

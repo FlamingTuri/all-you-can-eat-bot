@@ -4,7 +4,7 @@ class ShowButtonsCommand : BotCommand {
 
     override val command: String = "/showButtons"
 
-    override val pattern: String = "(\\/\\w+)?(\\s*)"
+    override val pattern: String = "((\\s+)(\\/\\w+))?(\\s*)"
 
     override val format: String = "{subCommand}"
 
