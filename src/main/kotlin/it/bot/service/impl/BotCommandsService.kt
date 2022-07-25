@@ -16,6 +16,7 @@ import it.bot.service.impl.command.MyOrdersService
 import it.bot.service.impl.command.NameDishService
 import it.bot.service.impl.command.OpenOrderService
 import it.bot.service.impl.command.RemoveDishService
+import it.bot.service.impl.command.ShowButtonsService
 import it.bot.service.impl.command.ShowOrderService
 import it.bot.service.impl.command.StartMessageService
 import it.bot.service.interfaces.CommandParserService
@@ -43,7 +44,8 @@ class BotCommandsService(
     private val addDishesService: AddDishesService,
     private val nameDishService: NameDishService,
     private val removeDishService: RemoveDishService,
-    private val myOrdersService: MyOrdersService
+    private val myOrdersService: MyOrdersService,
+    private val showButtonsService: ShowButtonsService
 ) {
 
     init {
@@ -52,7 +54,7 @@ class BotCommandsService(
 
     fun getCommandServices(): List<CommandParserService> {
         return listOf(
-            startMessageService, helpMessageService,
+            startMessageService, helpMessageService, showButtonsService,
 
             addDishService, addDishesService, nameDishService, removeDishService, myOrdersService,
 
