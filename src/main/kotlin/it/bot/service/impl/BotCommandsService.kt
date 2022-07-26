@@ -3,7 +3,6 @@ package it.bot.service.impl
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.quarkus.logging.Log
 import it.bot.client.rest.TelegramRestClient
-import it.bot.model.command.ShowDishButtonsCommand
 import it.bot.service.impl.command.AddDishService
 import it.bot.service.impl.command.AddDishesService
 import it.bot.service.impl.command.BlameDishService
@@ -17,7 +16,6 @@ import it.bot.service.impl.command.MyOrdersService
 import it.bot.service.impl.command.NameDishService
 import it.bot.service.impl.command.OpenOrderService
 import it.bot.service.impl.command.RemoveDishService
-import it.bot.service.impl.command.ShowButtonsService
 import it.bot.service.impl.command.ShowDishButtonsService
 import it.bot.service.impl.command.ShowOrderButtonsService
 import it.bot.service.impl.command.ShowOrderService
