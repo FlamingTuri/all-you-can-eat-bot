@@ -1,9 +1,9 @@
 package it.bot.service.impl.command
 
 import it.bot.model.command.LeaveOrderCommand
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
-import it.bot.repository.OrderRepository
 import it.bot.repository.UserDishRepository
 import it.bot.repository.UserRepository
 import it.bot.service.interfaces.CommandParserService
@@ -11,24 +11,22 @@ import it.bot.util.MessageUtils
 import it.bot.util.TimeUtils
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class LeaveOrderService(
     @ConfigProperty(name = "bot.reopen.order.timeout") private val botReopenOrderTimeout: Int,
-    private val orderRepository: OrderRepository,
     private val userRepository: UserRepository,
     private val userDishRepository: UserDishRepository
 ) : CommandParserService {
 
     override val botCommand = LeaveOrderCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage? {
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage? {
         val orderName = destructure(matchResult)
 
-        val telegramUserId = MessageUtils.getTelegramUserId(update)
-        val chatId = MessageUtils.getChatId(update)
+        val telegramUserId = MessageUtils.getTelegramUserId(messageDto)
+        val chatId = MessageUtils.getChatId(messageDto)
         val user = userRepository.findUser(telegramUserId, chatId, orderName)
 
         val messageText = when {
@@ -37,7 +35,7 @@ class LeaveOrderService(
             else -> leaveOpenOrderIfNoUserDishesArePresent(user)
         }
 
-        return MessageUtils.createMessage(update, messageText)
+        return MessageUtils.createMessage(messageDto, messageText)
     }
 
     private fun destructure(matchResult: MatchResult): String {

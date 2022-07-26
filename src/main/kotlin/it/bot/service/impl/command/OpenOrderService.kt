@@ -2,6 +2,7 @@ package it.bot.service.impl.command
 
 import io.quarkus.logging.Log
 import it.bot.model.command.OpenOrderCommand
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.enum.OrderStatus
 import it.bot.repository.OrderRepository
@@ -10,8 +11,7 @@ import it.bot.util.MessageUtils
 import it.bot.util.OrderUtils
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
-import java.util.*
+import java.util.Calendar
 import javax.enterprise.context.ApplicationScoped
 
 
@@ -23,14 +23,14 @@ class OpenOrderService(
 
     override val botCommand = OpenOrderCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
         val orderName = destructure(matchResult)
-        val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(update), orderName)
+        val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(messageDto), orderName)
 
         return when {
-            order == null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
-            order.status == OrderStatus.Open -> getOrderAlreadyOpenMessage(update, order)
-            else -> openOrderIfTimeoutIsNotElapsed(update, order)
+            order == null -> OrderUtils.getOrderNotFoundMessage(messageDto, orderName)
+            order.status == OrderStatus.Open -> getOrderAlreadyOpenMessage(messageDto, order)
+            else -> openOrderIfTimeoutIsNotElapsed(messageDto, order)
         }
     }
 
@@ -39,15 +39,15 @@ class OpenOrderService(
         return orderName
     }
 
-    private fun getOrderAlreadyOpenMessage(update: Update, order: OrderEntity): SendMessage {
-        Log.error("order ${order.orderId} is still open for chatId ${MessageUtils.getChatId(update)}")
+    private fun getOrderAlreadyOpenMessage(messageDto: MessageDto, order: OrderEntity): SendMessage {
+        Log.error("order ${order.orderId} is still open for chatId ${MessageUtils.getChatId(messageDto)}")
         return MessageUtils.createMessage(
-            update,
+            messageDto,
             "Error: order '${order.name}' is still open"
         )
     }
 
-    private fun openOrderIfTimeoutIsNotElapsed(update: Update, order: OrderEntity): SendMessage {
+    private fun openOrderIfTimeoutIsNotElapsed(messageDto: MessageDto, order: OrderEntity): SendMessage {
         return if (isTimeElapsed(order)) {
             Log.error(
                 "order has been closed for more than $botReopenOrderTimeout minutes: " +
@@ -55,12 +55,12 @@ class OpenOrderService(
                         "current time ${Calendar.getInstance().time}"
             )
             MessageUtils.createMessage(
-                update,
+                messageDto,
                 "Error: order '${order.name}' cannot be reopened " +
                         "since it has been closed for more than $botReopenOrderTimeout minutes"
             )
         } else {
-            openOrder(update, order)
+            openOrder(messageDto, order)
         }
     }
 
@@ -70,11 +70,11 @@ class OpenOrderService(
         return currentTimeNow.time >= order.lastUpdateDate
     }
 
-    private fun openOrder(update: Update, order: OrderEntity): SendMessage {
+    private fun openOrder(messageDto: MessageDto, order: OrderEntity): SendMessage {
         order.status = OrderStatus.Open
         orderRepository.persist(order)
         return MessageUtils.createMessage(
-            update,
+            messageDto,
             "Successfully opened order '${order.name}'"
         )
     }

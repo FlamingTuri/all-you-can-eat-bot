@@ -2,6 +2,7 @@ package it.bot.service.impl.command
 
 import io.quarkus.logging.Log
 import it.bot.model.command.AddDishCommand
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.DishEntity
 import it.bot.model.entity.UserDishEntity
 import it.bot.model.entity.UserEntity
@@ -15,7 +16,6 @@ import it.bot.util.MessageUtils
 import it.bot.util.OrderUtils
 import it.bot.util.UserUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -27,24 +27,24 @@ class AddDishService(
 
     override val botCommand = AddDishCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
         val (dishMenuNumber, dishQuantity, dishName) = destructure(matchResult)
 
         if (dishQuantity <= 0) {
             Log.error(
                 "inserted a wrong quantity value: $dishQuantity, " +
-                        "telegramUserId: ${MessageUtils.getTelegramUserId(update)}, " +
-                        "telegramChatId: ${MessageUtils.getChatId(update)}"
+                        "telegramUserId: ${MessageUtils.getTelegramUserId(messageDto)}, " +
+                        "telegramChatId: ${MessageUtils.getChatId(messageDto)}"
             )
-            return MessageUtils.createMessage(update, "Error: quantity must be greater than 0")
+            return MessageUtils.createMessage(messageDto, "Error: quantity must be greater than 0")
         }
 
-        val user = userRepository.findUser(MessageUtils.getTelegramUserId(update))
+        val user = userRepository.findUser(MessageUtils.getTelegramUserId(messageDto))
         return when {
-            user == null -> UserUtils.getUserDoesNotBelongToOrderMessage(update)
+            user == null -> UserUtils.getUserDoesNotBelongToOrderMessage(messageDto)
             user.order?.status == OrderStatus.Closed ->
-                OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(update, user.order?.name!!)
-            else -> addDishToOrder(update, user, dishMenuNumber, dishName, dishQuantity)
+                OrderUtils.getOperationNotAllowedWhenOrderIsClosedMessage(messageDto, user.order?.name!!)
+            else -> addDishToOrder(messageDto, user, dishMenuNumber, dishName, dishQuantity)
         }
     }
 
@@ -58,14 +58,14 @@ class AddDishService(
     }
 
     private fun addDishToOrder(
-        update: Update, user: UserEntity, dishMenuNumber: Int, dishName: String?, dishQuantity: Int
+        messageDto: MessageDto, user: UserEntity, dishMenuNumber: Int, dishName: String?, dishQuantity: Int
     ): SendMessage {
         val dish = createOrUpdateDish(user, dishMenuNumber, dishName)
 
         val userDish = addToUserDishes(user, dish, dishQuantity)
 
         return MessageUtils.createMessage(
-            update,
+            messageDto,
             "Successfully added number ${DishUtils.formatDishInfo(dish)} " +
                     "to order '${user.order!!.name}' (your quantity: ${userDish.quantity})"
         )

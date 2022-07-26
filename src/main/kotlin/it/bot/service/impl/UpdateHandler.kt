@@ -1,6 +1,7 @@
 package it.bot.service.impl
 
 import io.quarkus.logging.Log
+import it.bot.model.dto.MessageDto
 import it.bot.util.MessageUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
@@ -14,29 +15,29 @@ class UpdateHandler(private val updateParserService: UpdateParserService) {
             Log.debug("update received $update")
         }
 
-        if (update.hasMessage() && update.message.hasText()) {
+        MessageDto.getMessageDto(update)?.also {
             try {
-                handleUpdateAndNotifyResult(absSender, update)
+                handleUpdateAndNotifyResult(absSender, it)
             } catch (exception: Exception) {
-                handleUnexpectedError(absSender, update, exception)
+                handleUnexpectedError(absSender, it, exception)
             }
         }
     }
 
-    private fun handleUpdateAndNotifyResult(absSender: AbsSender, update: Update) {
-        sendMessage(absSender, updateParserService.handleUpdate(update))
+    private fun handleUpdateAndNotifyResult(absSender: AbsSender, messageDto: MessageDto) {
+        sendMessage(absSender, updateParserService.handleUpdate(messageDto))
     }
 
-    private fun handleUnexpectedError(absSender: AbsSender, update: Update, exception: Exception) {
+    private fun handleUnexpectedError(absSender: AbsSender, messageDto: MessageDto, exception: Exception) {
         Log.error(
             "unexpected error occurred: " +
-                    "chatId ${MessageUtils.getChatId(update)}, " +
-                    "userId ${MessageUtils.getTelegramUserId(update)}, " +
-                    "message '${MessageUtils.getChatMessage(update)}' ",
+                    "chatId ${MessageUtils.getChatId(messageDto)}, " +
+                    "userId ${MessageUtils.getTelegramUserId(messageDto)}, " +
+                    "message '${messageDto.text}' ",
             exception
         )
         val message = MessageUtils.createMessage(
-            update, "Error: something unexpected happened. Reason: ${exception.message}"
+            messageDto, "Error: something unexpected happened. Reason: ${exception.message}"
         )
         sendMessage(absSender, message)
     }

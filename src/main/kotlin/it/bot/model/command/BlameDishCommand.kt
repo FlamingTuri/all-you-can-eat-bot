@@ -2,7 +2,7 @@ package it.bot.model.command
 
 import it.bot.util.Regexes
 
-class BlameDishCommand : BotCommand {
+class BlameDishCommand : BotCommand, KeyboardButton  {
 
     override val command: String = "/blame"
 
@@ -13,4 +13,8 @@ class BlameDishCommand : BotCommand {
     override val description: String = "search who ordered a dish"
 
     override val commandType: CommandType = CommandType.Group
+
+    override fun getInlineKeyboardButtonText(): String = "blame"
+
+    override fun getCallbackData(): String = command
 }

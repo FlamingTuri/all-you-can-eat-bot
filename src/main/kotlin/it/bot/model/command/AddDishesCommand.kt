@@ -1,7 +1,7 @@
 package it.bot.model.command
 
 
-class AddDishesCommand : BotCommand {
+class AddDishesCommand : BotCommand, KeyboardButton {
 
     override val command: String = "/addDishes"
 
@@ -14,4 +14,10 @@ class AddDishesCommand : BotCommand {
     override val description: String = "same as /addDish but you can specify multiple dishes, one per line"
 
     override val commandType: CommandType = CommandType.Anywhere
+
+    override fun isMultiline(): Boolean = true
+
+    override fun getInlineKeyboardButtonText(): String = "add"
+
+    override fun getCallbackData(): String = command
 }

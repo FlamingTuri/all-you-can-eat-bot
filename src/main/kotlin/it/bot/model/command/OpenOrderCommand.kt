@@ -2,7 +2,7 @@ package it.bot.model.command
 
 import it.bot.util.Regexes
 
-class OpenOrderCommand : BotCommand {
+class OpenOrderCommand : BotCommand, KeyboardButton {
 
     override val command: String = "/openOrder"
 
@@ -13,4 +13,8 @@ class OpenOrderCommand : BotCommand {
     override val description: String = "open a CLOSED order"
 
     override val commandType: CommandType = CommandType.Group
+
+    override fun getInlineKeyboardButtonText(): String = "open"
+
+    override fun getCallbackData(): String = command
 }

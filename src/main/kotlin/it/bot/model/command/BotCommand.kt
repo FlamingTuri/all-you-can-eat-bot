@@ -12,6 +12,8 @@ interface BotCommand {
 
     val commandType: CommandType
 
+    fun isMultiline(): Boolean = false
+
     fun matches(text: String, botUsername: String): Boolean {
         return text.startsWith("$command ", true) or
                 text.startsWith("$command@$botUsername ", true) or

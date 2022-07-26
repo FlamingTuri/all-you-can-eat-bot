@@ -2,6 +2,7 @@ package it.bot.service.impl.command
 
 import it.bot.model.command.ShowOrderCommand
 import it.bot.model.dto.DishDto
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.OrderEntity
 import it.bot.repository.DishJpaRepository
 import it.bot.repository.OrderRepository
@@ -9,7 +10,6 @@ import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
 import it.bot.util.OrderUtils
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
-import org.telegram.telegrambots.meta.api.objects.Update
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -20,18 +20,18 @@ class ShowOrderService(
 
     override val botCommand = ShowOrderCommand()
 
-    override fun executeOperation(update: Update, matchResult: MatchResult): SendMessage {
+    override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage {
         val orderName = destructure(matchResult)
 
-        return when (val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(update), orderName)) {
-            null -> OrderUtils.getOrderNotFoundMessage(update, orderName)
+        return when (val order = orderRepository.findOrderWithNameForChat(MessageUtils.getChatId(messageDto), orderName)) {
+            null -> OrderUtils.getOrderNotFoundMessage(messageDto, orderName)
             else -> {
                 val orderDishes = groupOrderDishesByMenuNumber(order)
 
                 val messageText = "Order '${order.name}' (${order.status})" +
                         "\n\n${OrderUtils.createOrderRecap(orderDishes)}"
 
-                MessageUtils.createMessage(update, messageText)
+                MessageUtils.createMessage(messageDto, messageText)
             }
         }
     }

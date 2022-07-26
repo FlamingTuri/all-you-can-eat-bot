@@ -2,7 +2,7 @@ package it.bot.model.command
 
 import it.bot.util.Regexes
 
-class JoinOrderCommand : BotCommand {
+class JoinOrderCommand : BotCommand, KeyboardButton {
 
     override val command = "/joinOrder"
 
@@ -13,4 +13,8 @@ class JoinOrderCommand : BotCommand {
     override val description: String = "join an existing OPEN order"
 
     override val commandType: CommandType = CommandType.Group
+
+    override fun getInlineKeyboardButtonText(): String = "join"
+
+    override fun getCallbackData(): String = command
 }
