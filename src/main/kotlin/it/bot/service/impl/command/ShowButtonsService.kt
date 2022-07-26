@@ -2,9 +2,17 @@ package it.bot.service.impl.command
 
 import it.bot.model.command.AddDishesCommand
 import it.bot.model.command.BlameDishCommand
+import it.bot.model.command.ChatOrdersCommand
+import it.bot.model.command.CloseOrderCommand
+import it.bot.model.command.CreateOrderCommand
+import it.bot.model.command.JoinOrderCommand
+import it.bot.model.command.KeyboardButton
+import it.bot.model.command.LeaveOrderCommand
 import it.bot.model.command.NameDishCommand
+import it.bot.model.command.OpenOrderCommand
 import it.bot.model.command.RemoveDishCommand
 import it.bot.model.command.ShowButtonsCommand
+import it.bot.model.command.ShowOrderCommand
 import it.bot.model.dto.MessageDto
 import it.bot.service.interfaces.CommandParserService
 import it.bot.util.MessageUtils
@@ -39,20 +47,23 @@ class ShowButtonsService : CommandParserService {
 
     private fun getKeyboardButtons(subCommand: String): List<List<InlineKeyboardButton>> {
         return when (subCommand) {
-            orderButtonsSubCommand -> TODO()
+            orderButtonsSubCommand -> getOrderButtonsMenu()
             dishButtonsSubCommand -> getDishButtonsMenu()
             else -> getMainButtonsMenu()
         }.map { it.filterNotNull() }
     }
 
+    private fun getOrderButtonsMenu(): List<List<InlineKeyboardButton?>> {
+        return mutableListOf(
+            mapToInlineKeyboardButtons(CreateOrderCommand(), OpenOrderCommand(), CloseOrderCommand()),
+            mapToInlineKeyboardButtons(JoinOrderCommand(), LeaveOrderCommand()),
+            mapToInlineKeyboardButtons(ChatOrdersCommand(), ShowOrderCommand())
+        )
+    }
+
     private fun getDishButtonsMenu(): List<List<InlineKeyboardButton?>> {
         return mutableListOf(
-            mutableListOf(
-                AddDishesCommand().getInlineKeyboardButton(),
-                NameDishCommand().getInlineKeyboardButton(),
-                RemoveDishCommand().getInlineKeyboardButton(),
-                BlameDishCommand().getInlineKeyboardButton()
-            )
+            mapToInlineKeyboardButtons(AddDishesCommand(), NameDishCommand(), RemoveDishCommand(), BlameDishCommand())
         )
     }
 
@@ -69,5 +80,9 @@ class ShowButtonsService : CommandParserService {
                 }
             )
         )
+    }
+
+    private fun mapToInlineKeyboardButtons(vararg keyboardButton: KeyboardButton): List<InlineKeyboardButton> {
+        return keyboardButton.map { it.getInlineKeyboardButton() }
     }
 }
