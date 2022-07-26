@@ -1,6 +1,7 @@
 package it.bot.unit.service
 
 import io.quarkus.test.junit.QuarkusTest
+import it.bot.model.dto.MessageDto
 import it.bot.model.entity.OrderEntity
 import it.bot.model.entity.UserEntity
 import it.bot.model.enum.OrderStatus
@@ -16,8 +17,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.mockito.Mockito
 import org.telegram.telegrambots.meta.api.objects.Chat
-import org.telegram.telegrambots.meta.api.objects.Message
-import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.User
 import java.util.Calendar
 import kotlin.test.assertEquals
@@ -53,19 +52,17 @@ class JoinOrderServiceTest {
             .thenReturn(null)
 
         val orderName = "targetOrderName"
-        val update = Update().apply {
-            message = Message().apply {
-                text = "/joinOrder $orderName"
-                chat = Chat().apply {
-                    id = 1
-                }
-                from = User().apply {
-                    id = 100
-                }
-            }
-        }
+        val messageDto = MessageDto(
+            10000,
+            User().apply {
+                id = 100
+            },
+            "/joinOrder $orderName",
+            Chat().apply {
+                id = 1
+            })
 
-        val message = updateParserService.handleUpdate(update)
+        val message = updateParserService.handleUpdate(messageDto)
         assertEquals(OrderMessages.orderNotFoundError(orderName), message!!.text)
     }
 
@@ -75,19 +72,17 @@ class JoinOrderServiceTest {
             .thenReturn(OrderEntity().apply { status = OrderStatus.Closed })
 
         val orderName = "targetOrderName"
-        val update = Update().apply {
-            message = Message().apply {
-                text = "/joinOrder $orderName"
-                chat = Chat().apply {
-                    id = 1
-                }
-                from = User().apply {
-                    id = 100
-                }
-            }
-        }
+        val messageDto = MessageDto(
+            10000,
+            User().apply {
+                id = 100
+            },
+            "/joinOrder $orderName",
+            Chat().apply {
+                id = 1
+            })
 
-        val message = updateParserService.handleUpdate(update)
+        val message = updateParserService.handleUpdate(messageDto)
         assertEquals(OrderMessages.operationNotAllowedForClosedOrderError(orderName), message!!.text)
     }
 
@@ -111,19 +106,17 @@ class JoinOrderServiceTest {
                 })
             )
 
-        val update = Update().apply {
-            message = Message().apply {
-                text = "/joinOrder $orderName"
-                chat = Chat().apply {
-                    id = 1
-                }
-                from = User().apply {
-                    id = telegramUserId
-                }
-            }
-        }
+        val messageDto = MessageDto(
+            10000,
+            User().apply {
+                id = telegramUserId
+            },
+            "/joinOrder $orderName",
+            Chat().apply {
+                id = 1
+            })
 
-        val message = updateParserService.handleUpdate(update)
+        val message = updateParserService.handleUpdate(messageDto)
         assertEquals(OrderMessages.orderCanBeReopenedError(orderName), message!!.text)
     }
 }
