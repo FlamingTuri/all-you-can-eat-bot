@@ -3,7 +3,7 @@ package it.bot.model.command
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 
 
-class AddDishesCommand : BotCommand {
+class AddDishesCommand : BotCommand, KeyboardButton {
 
     override val command: String = "/addDishes"
 
@@ -17,5 +17,7 @@ class AddDishesCommand : BotCommand {
 
     override val commandType: CommandType = CommandType.Anywhere
 
-    override fun getInlineKeyboardButtonText(): String? = "add"
+    override fun getInlineKeyboardButtonText(): String = "add"
+
+    override fun getCallbackData(): String = command
 }

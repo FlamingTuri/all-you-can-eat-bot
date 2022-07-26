@@ -1,6 +1,6 @@
 package it.bot.model.command
 
-class RemoveDishCommand : BotCommand {
+class RemoveDishCommand : BotCommand, KeyboardButton {
 
     override val command: String = "/removeDish"
 
@@ -12,5 +12,7 @@ class RemoveDishCommand : BotCommand {
 
     override val commandType: CommandType = CommandType.Anywhere
 
-    override fun getInlineKeyboardButtonText(): String? = "remove"
+    override fun getInlineKeyboardButtonText(): String = "remove"
+
+    override fun getCallbackData(): String = command
 }
