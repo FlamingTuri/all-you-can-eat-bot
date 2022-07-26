@@ -1,7 +1,5 @@
 package it.bot.model.command
 
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
-
 
 class AddDishesCommand : BotCommand, KeyboardButton {
 
@@ -16,6 +14,8 @@ class AddDishesCommand : BotCommand, KeyboardButton {
     override val description: String = "same as /addDish but you can specify multiple dishes, one per line"
 
     override val commandType: CommandType = CommandType.Anywhere
+
+    override fun isMultiline(): Boolean = true
 
     override fun getInlineKeyboardButtonText(): String = "add"
 

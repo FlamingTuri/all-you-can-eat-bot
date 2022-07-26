@@ -101,14 +101,20 @@ class UpdateParserService(
     }
 
     private fun getWaitingResponseMessage(messageDto: MessageDto, botCommand: BotCommand): SendMessage {
-        val command = botCommand.command
-        val format = botCommand.format
-        val messageText = "Finalize $command operation by replying with a message with the following format: $format"
+        val messageText = getWaitingResponseMessageText(botCommand)
         return MessageUtils.createMessage(messageDto, messageText).apply {
             if (messageDto.chat.isGroupChat || messageDto.chat.isSuperGroupChat) {
                 setReplyMarkup(this, messageDto)
             }
         }
+    }
+
+    private fun getWaitingResponseMessageText(botCommand: BotCommand): String {
+        val command = botCommand.command
+        val format = botCommand.format
+        val isMultiline = botCommand.isMultiline()
+        return "Finalize $command operation by replying with a message with the following format: $format" +
+                if (isMultiline) "\nThe format can be repeated over multiple lines to make bulk operations" else ""
     }
 
     private fun setReplyMarkup(sendMessage: SendMessage, messageDto: MessageDto) {
