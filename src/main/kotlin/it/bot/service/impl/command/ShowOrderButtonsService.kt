@@ -23,7 +23,7 @@ class ShowOrderButtonsService : CommandParserService {
     override val botCommand = ShowOrderButtonsCommand()
 
     override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage? {
-        val response = MessageUtils.createMessage(messageDto, "Select the operation")
+        val response = MessageUtils.createMessage(messageDto, "Order operations menu:")
 
         return response.apply {
             replyMarkup = InlineKeyboardMarkup().apply {

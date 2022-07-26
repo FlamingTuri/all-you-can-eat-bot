@@ -20,7 +20,7 @@ class ShowDishButtonsService : CommandParserService {
     override val botCommand = ShowDishButtonsCommand()
 
     override fun executeOperation(messageDto: MessageDto, matchResult: MatchResult): SendMessage? {
-        val response = MessageUtils.createMessage(messageDto, "Select the operation")
+        val response = MessageUtils.createMessage(messageDto, "Dish operations menu:")
 
         return response.apply {
             replyMarkup = InlineKeyboardMarkup().apply {
